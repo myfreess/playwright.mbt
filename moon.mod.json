@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "deps": {
     "moonbitlang/async": "0.16.2",
+    "moonbitlang/regexp": "0.3.4",
     "mizchi/webdriver": "0.2.1"
   },
   "readme": "README.mbt.md",
@@ -14,6 +15,6 @@
     "webdriver"
   ],
   "description": "Playwright-compatible API built on WebDriver BiDi",
-  "source": "src",
+  "source": "src/playwright",
   "preferred-target": "js"
 }

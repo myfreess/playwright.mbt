@@ -498,7 +498,9 @@ async test "filter has_text and get_by_label" {
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
   let page = browser.new_page()
-  let locator = page.locator("div").filter(has_text="Hello", has_not_text="Skip")
+  let locator = page
+    .locator("div")
+    .filter(has_text="Hello", has_not_text="Skip")
   locator.click()
   page.get_by_label("Name").click()
   page.locator("section").get_by_label("Scoped").click()
@@ -712,7 +714,10 @@ async test "wait_for_request match modes" {
     None => assert_true(false)
   }
   match
-    page.wait_for_request("^https://example.com/api/.*items$", match_mode="regex") {
+    page.wait_for_request(
+      "^https://example.com/api/.*items$",
+      match_mode="regex",
+    ) {
     Some(req) => inspect(req.url(), content="https://example.com/api/v2/items")
     None => assert_true(false)
   }

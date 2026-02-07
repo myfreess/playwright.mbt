@@ -207,7 +207,11 @@ pub fn Page::get_by_placeholder(
 
 ///|
 /// Get locator by alt text
-pub fn Page::get_by_alt_text(self : Page, text : String, exact? : Bool) -> Locator {
+pub fn Page::get_by_alt_text(
+  self : Page,
+  text : String,
+  exact? : Bool,
+) -> Locator {
   consume(exact)
   let selector = "[alt=" + js_string_literal(text) + "]"
   let state : LocatorState = {
@@ -850,7 +854,9 @@ pub async fn Page::screenshot(
   scale? : String,
 ) -> ResponseBody {
   consume(
-    (self, path, type_, quality, full_page, clip, omit_background, timeout, scale),
+    (
+      self, path, type_, quality, full_page, clip, omit_background, timeout, scale,
+    ),
   )
   async_noop()
   ResponseBody::bytes(b"")
@@ -876,8 +882,8 @@ pub async fn Page::pdf(
 ) -> ResponseBody {
   consume(
     (
-      self, path, scale, display_header_footer, header_template, footer_template, print_background,
-      landscape, page_ranges, format, width, height, margin, prefer_css_page_size,
+      self, path, scale, display_header_footer, header_template, footer_template,
+      print_background, landscape, page_ranges, format, width, height, margin, prefer_css_page_size,
     ),
   )
   async_noop()
@@ -940,7 +946,10 @@ pub fn Page::viewport_size(self : Page) -> (Int, Int)? {
 
 ///|
 /// Set extra HTTP headers
-pub async fn Page::set_extra_http_headers(self : Page, headers : Headers) -> Unit {
+pub async fn Page::set_extra_http_headers(
+  self : Page,
+  headers : Headers,
+) -> Unit {
   consume((self, headers))
   async_noop()
 }

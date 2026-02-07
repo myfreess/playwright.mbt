@@ -9,6 +9,9 @@ Playwright 互換の API を WebDriver BiDi 上に実装した MoonBit ライブ
 ## 使い方
 
 ```mbt
-// この README は API の概観のみ。詳細は src/playwright/*.mbt を参照。
-```
+import "mizchi/playwright" as @pw
+import "mizchi/playwright/test" as @pwt
 
+let chromium = @pw.chromium()
+let _ = @pwt.expect(chromium.name()).to_equal("chromium")
+```

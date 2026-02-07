@@ -21,6 +21,11 @@ test "expect to_match" {
 }
 
 ///|
+test "expect to_match supports non-capturing group" {
+  expect("ab").to_match("(?:a)b")
+}
+
+///|
 test "expect failure" {
   assert_failure(fn() { expect(1).to_be(2) })
   assert_failure(fn() { expect("hello").to_match("z+") })

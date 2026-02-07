@@ -1,0 +1,3 @@
+import {
+  "mizchi/playwright" as @playwright,
+}

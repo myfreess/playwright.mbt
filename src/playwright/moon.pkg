@@ -1,5 +1,6 @@
 import {
   "mizchi/webdriver/bidi" as @bidi,
+  "moonbitlang/regexp" as @regexp,
   "moonbitlang/core/json" as @json,
   "moonbitlang/core/string" as @string,
   "moonbitlang/async" as @async,
