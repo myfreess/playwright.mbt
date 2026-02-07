@@ -1,15 +1,7 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "mizchi/playwright/test"
-
-import {
-  "mizchi/playwright",
-}
+package "mizchi/playwright/test_utils"
 
 // Values
-pub fn[T] expect(T) -> @playwright.Expect[T]
-
-pub fn[T] expect_poll(async () -> T, timeout? : Int, interval? : Int) -> PollExpect[T]
-
 #callsite(autofill(loc))
 pub fn fail(() -> Unit raise, msg? : String, loc~ : SourceLoc) -> Unit raise
 
@@ -23,8 +15,6 @@ pub fn fixme(() -> Unit raise, msg? : String, loc~ : SourceLoc) -> Unit raise
 pub async fn fixme_async(async () -> Unit, msg? : String, loc~ : SourceLoc) -> Unit
 
 pub fn in_shard(item_index~ : Int, item_total~ : Int, shard_index~ : Int, shard_total~ : Int) -> Bool
-
-pub fn[T] poll(async () -> T, timeout? : Int, interval? : Int) -> PollExpect[T]
 
 pub async fn[T] retry(times~ : Int, async () -> T) -> T
 
@@ -53,19 +43,6 @@ pub async fn to_pass(async () -> Unit, timeout? : Int, interval? : Int) -> Unit
 // Errors
 
 // Types and methods
-pub struct PollExpect[T] {
-  probe : async () -> T
-  timeout_ms : Int
-  interval_ms : Int
-}
-#callsite(autofill(loc))
-pub async fn[T : Eq + Show] PollExpect::to_be(Self[T], T, msg? : String, loc~ : SourceLoc) -> Unit
-#callsite(autofill(loc))
-pub async fn PollExpect::to_contain(Self[String], String, msg? : String, loc~ : SourceLoc) -> Unit
-#callsite(autofill(loc))
-pub async fn[T : Eq + Show] PollExpect::to_equal(Self[T], T, msg? : String, loc~ : SourceLoc) -> Unit
-#callsite(autofill(loc))
-pub async fn PollExpect::to_match(Self[String], String, msg? : String, loc~ : SourceLoc) -> Unit
 
 // Type aliases
 

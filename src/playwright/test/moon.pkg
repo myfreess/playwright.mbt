@@ -1,3 +1,8 @@
 import {
   "mizchi/playwright" as @playwright,
+  "mizchi/playwright/test_utils" as @test_utils,
+}
+
+import "test" {
+  "moonbitlang/async",
 }
