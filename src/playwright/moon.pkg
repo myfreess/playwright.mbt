@@ -1,0 +1,11 @@
+import {
+  "mizchi/webdriver/bidi" as @bidi,
+  "moonbitlang/core/json" as @json,
+  "moonbitlang/core/string" as @string,
+  "moonbitlang/async" as @async,
+  "moonbitlang/async/aqueue" as @aqueue,
+}
+
+import "test" {
+  "moonbitlang/async",
+}
