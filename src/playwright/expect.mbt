@@ -720,7 +720,7 @@ async fn wait_for_text_match(
   let mode = resolve_text_match_mode(kind, match_mode)
   let (matched, last) = wait_for_match(
     timeout_ms,
-    async fn() { locator.innerText() },
+    async fn() { locator.inner_text() },
     fn(text : String) { text_matches(text, expected, mode, normalize_value) },
     "",
   )
@@ -884,7 +884,7 @@ pub async fn Expect::to_have_class(
             all_present = false
             actuals.push("<missing>")
           } else {
-            let value = loc.getAttribute("class")
+            let value = loc.get_attribute("class")
             actuals.push(normalize_optional_text(value))
           }
           index = index + 1
@@ -956,7 +956,7 @@ pub async fn Expect::to_have_class(
     let (matched, actual) = wait_for_match(
       timeout_ms,
       async fn() {
-        let value = self.actual.getAttribute("class")
+        let value = self.actual.get_attribute("class")
         normalize_optional_text(value)
       },
       fn(value : String) {
@@ -1140,7 +1140,7 @@ pub async fn Expect::to_be_visible(
   }
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.isVisible() },
+    async fn() { self.actual.is_visible() },
     fn(value : Bool) { value },
     false,
   )
@@ -1169,7 +1169,7 @@ pub async fn Expect::to_be_hidden(
   }
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.isHidden() },
+    async fn() { self.actual.is_hidden() },
     fn(value : Bool) { value },
     false,
   )
@@ -1198,7 +1198,7 @@ pub async fn Expect::to_be_enabled(
   }
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.isEnabled() },
+    async fn() { self.actual.is_enabled() },
     fn(value : Bool) { value },
     false,
   )
@@ -1227,7 +1227,7 @@ pub async fn Expect::to_be_disabled(
   }
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.isDisabled() },
+    async fn() { self.actual.is_disabled() },
     fn(value : Bool) { value },
     false,
   )
@@ -1256,7 +1256,7 @@ pub async fn Expect::to_be_checked(
   }
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.isChecked() },
+    async fn() { self.actual.is_checked() },
     fn(value : Bool) { value },
     false,
   )
@@ -1285,7 +1285,7 @@ pub async fn Expect::to_be_editable(
   }
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.isEditable() },
+    async fn() { self.actual.is_editable() },
     fn(value : Bool) { value },
     false,
   )
@@ -1322,7 +1322,7 @@ pub async fn Expect::to_have_value(
   let mode = resolve_text_match_mode(TextMatchKind::Equal, match_mode)
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.inputValue() },
+    async fn() { self.actual.input_value() },
     fn(value : String) { text_matches(value, expected, mode, normalize_value) },
     "",
   )
@@ -1361,7 +1361,7 @@ pub async fn Expect::to_have_attribute(
   let initial : String? = None
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.getAttribute(name) },
+    async fn() { self.actual.get_attribute(name) },
     fn(value : String?) {
       match expected {
         Some(exp) =>

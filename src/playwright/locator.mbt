@@ -6,19 +6,19 @@
 pub fn Locator::filter(
   self : Locator,
   has? : Locator,
-  hasNot? : Locator,
-  hasText? : String,
-  hasNotText? : String,
+  has_not? : Locator,
+  has_text? : String,
+  has_not_text? : String,
 ) -> Locator {
-  consume((has, hasNot, hasNotText))
+  consume((has, has_not, has_not_text))
   let state = self.state.val
   let selector = state.selector
-  let new_has_text = match hasText {
+  let new_has_text = match has_text {
     Some(text) => Some(text)
     None => state.has_text
   }
   let new_has_text_exact = state.has_text_exact
-  let new_has_not_text = match hasNotText {
+  let new_has_not_text = match has_not_text {
     Some(text) => Some(text)
     None => state.has_not_text
   }
@@ -111,7 +111,7 @@ pub fn Locator::locator(self : Locator, selector : String) -> Locator {
 
 ///|
 /// Get by role within this locator
-pub fn Locator::getByRole(
+pub fn Locator::get_by_role(
   self : Locator,
   role : String,
   name? : String,
@@ -124,14 +124,14 @@ pub fn Locator::getByRole(
     "]"
   let base = Locator::from_selector(self.state.val.page, selector)
   match name {
-    Some(text) => base.getByText(text, exact?)
+    Some(text) => base.get_by_text(text, exact?)
     None => base
   }
 }
 
 ///|
 /// Get by text within this locator
-pub fn Locator::getByText(
+pub fn Locator::get_by_text(
   self : Locator,
   text : String,
   exact? : Bool,
@@ -157,7 +157,7 @@ pub fn Locator::getByText(
 
 ///|
 /// Get by label within this locator
-pub fn Locator::getByLabel(
+pub fn Locator::get_by_label(
   self : Locator,
   text : String,
   exact? : Bool,
@@ -184,7 +184,7 @@ pub fn Locator::getByLabel(
 
 ///|
 /// Get by placeholder within this locator
-pub fn Locator::getByPlaceholder(
+pub fn Locator::get_by_placeholder(
   self : Locator,
   text : String,
   exact? : Bool,
@@ -195,7 +195,7 @@ pub fn Locator::getByPlaceholder(
 
 ///|
 /// Get by test ID within this locator
-pub fn Locator::getByTestId(self : Locator, testId : String) -> Locator {
+pub fn Locator::get_by_test_id(self : Locator, testId : String) -> Locator {
   self.locator("[data-testid=" + js_string_literal(testId) + "]")
 }
 
@@ -206,18 +206,18 @@ pub fn Locator::getByTestId(self : Locator, testId : String) -> Locator {
 pub async fn Locator::click(
   self : Locator,
   button? : String,
-  clickCount? : Int,
+  click_count? : Int,
   delay? : Int,
   force? : Bool,
   modifiers? : Array[String],
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   position? : (Double, Double),
   timeout? : Int,
   trial? : Bool,
 ) -> Unit {
   consume(
     (
-      button, clickCount, delay, force, modifiers, noWaitAfter, position, timeout,
+      button, click_count, delay, force, modifiers, no_wait_after, position, timeout,
       trial,
     ),
   )
@@ -250,10 +250,10 @@ pub async fn Locator::fill(
   self : Locator,
   value : String,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   let expr = "(() => { const el = " +
     self.element_expression() +
     "; if (!el) return; el.value = " +
@@ -268,10 +268,10 @@ pub async fn Locator::fill(
 pub async fn Locator::clear(
   self : Locator,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   self.fill("")
 }
 
@@ -281,10 +281,10 @@ pub async fn Locator::type_(
   self : Locator,
   text : String,
   delay? : Int,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((delay, noWaitAfter, timeout))
+  consume((delay, no_wait_after, timeout))
   let expr = "(() => { const el = " +
     self.element_expression() +
     "; if (!el) return; el.value = (el.value || '') + " +
@@ -300,10 +300,10 @@ pub async fn Locator::press(
   self : Locator,
   key : String,
   delay? : Int,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((delay, noWaitAfter, timeout))
+  consume((delay, no_wait_after, timeout))
   let expr = "(() => { const el = " +
     self.element_expression() +
     "; if (!el) return; const ev = new KeyboardEvent('keydown',{key:" +
@@ -318,10 +318,10 @@ pub async fn Locator::press(
 pub async fn Locator::check(
   self : Locator,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   let expr = "(() => { const el = " +
     self.element_expression() +
     "; if (!el) return; el.checked = true; el.dispatchEvent(new Event('change',{bubbles:true})); })()"
@@ -334,10 +334,10 @@ pub async fn Locator::check(
 pub async fn Locator::uncheck(
   self : Locator,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   let expr = "(() => { const el = " +
     self.element_expression() +
     "; if (!el) return; el.checked = false; el.dispatchEvent(new Event('change',{bubbles:true})); })()"
@@ -347,14 +347,14 @@ pub async fn Locator::uncheck(
 
 ///|
 /// Set checkbox state
-pub async fn Locator::setChecked(
+pub async fn Locator::set_checked(
   self : Locator,
   checked : Bool,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   if checked {
     self.check()
   } else {
@@ -364,14 +364,14 @@ pub async fn Locator::setChecked(
 
 ///|
 /// Select option(s) in dropdown
-pub async fn Locator::selectOption(
+pub async fn Locator::select_option(
   self : Locator,
   values : Array[SelectOption],
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Array[String] {
-  consume((self, values, force, noWaitAfter, timeout))
+  consume((self, values, force, no_wait_after, timeout))
   async_noop()
   []
 }
@@ -420,7 +420,7 @@ pub async fn Locator::blur(self : Locator, timeout? : Int) -> Unit {
 
 ///|
 /// Scroll element into view
-pub async fn Locator::scrollIntoViewIfNeeded(
+pub async fn Locator::scroll_into_view_if_needed(
   self : Locator,
   timeout? : Int,
 ) -> Unit {
@@ -437,9 +437,9 @@ pub async fn Locator::scrollIntoViewIfNeeded(
 
 ///|
 /// Get inner text
-pub async fn Locator::innerText(self : Locator, timeout? : Int) -> String {
+pub async fn Locator::inner_text(self : Locator, timeout? : Int) -> String {
   consume(timeout)
-  match self.eval_string(self.element_expression() + "?.innerText") {
+  match self.eval_string(self.element_expression() + "?.inner_text") {
     Some(v) => v
     None => ""
   }
@@ -447,9 +447,9 @@ pub async fn Locator::innerText(self : Locator, timeout? : Int) -> String {
 
 ///|
 /// Get inner HTML
-pub async fn Locator::innerHTML(self : Locator, timeout? : Int) -> String {
+pub async fn Locator::inner_html(self : Locator, timeout? : Int) -> String {
   consume(timeout)
-  match self.eval_string(self.element_expression() + "?.innerHTML") {
+  match self.eval_string(self.element_expression() + "?.inner_html") {
     Some(v) => v
     None => ""
   }
@@ -457,14 +457,14 @@ pub async fn Locator::innerHTML(self : Locator, timeout? : Int) -> String {
 
 ///|
 /// Get text content
-pub async fn Locator::textContent(self : Locator, timeout? : Int) -> String? {
+pub async fn Locator::text_content(self : Locator, timeout? : Int) -> String? {
   consume(timeout)
-  self.eval_string(self.element_expression() + "?.textContent")
+  self.eval_string(self.element_expression() + "?.text_content")
 }
 
 ///|
 /// Get all text contents
-pub async fn Locator::allTextContents(self : Locator) -> Array[String] {
+pub async fn Locator::all_text_contents(self : Locator) -> Array[String] {
   consume(self)
   async_noop()
   []
@@ -472,7 +472,7 @@ pub async fn Locator::allTextContents(self : Locator) -> Array[String] {
 
 ///|
 /// Get all inner texts
-pub async fn Locator::allInnerTexts(self : Locator) -> Array[String] {
+pub async fn Locator::all_inner_texts(self : Locator) -> Array[String] {
   consume(self)
   async_noop()
   []
@@ -480,7 +480,7 @@ pub async fn Locator::allInnerTexts(self : Locator) -> Array[String] {
 
 ///|
 /// Get attribute
-pub async fn Locator::getAttribute(
+pub async fn Locator::get_attribute(
   self : Locator,
   name : String,
   timeout? : Int,
@@ -488,7 +488,7 @@ pub async fn Locator::getAttribute(
   consume(timeout)
   self.eval_string(
     self.element_expression() +
-    "?.getAttribute(" +
+    "?.get_attribute(" +
     js_string_literal(name) +
     ")",
   )
@@ -496,7 +496,7 @@ pub async fn Locator::getAttribute(
 
 ///|
 /// Get input value
-pub async fn Locator::inputValue(self : Locator, timeout? : Int) -> String {
+pub async fn Locator::input_value(self : Locator, timeout? : Int) -> String {
   consume(timeout)
   match self.eval_string(self.element_expression() + "?.value") {
     Some(v) => v
@@ -506,7 +506,7 @@ pub async fn Locator::inputValue(self : Locator, timeout? : Int) -> String {
 
 ///|
 /// Check if element is visible
-pub async fn Locator::isVisible(self : Locator, timeout? : Int) -> Bool {
+pub async fn Locator::is_visible(self : Locator, timeout? : Int) -> Bool {
   consume(timeout)
   match self.eval_bool(self.element_expression() + "?.offsetParent !== null") {
     Some(v) => v
@@ -516,7 +516,7 @@ pub async fn Locator::isVisible(self : Locator, timeout? : Int) -> Bool {
 
 ///|
 /// Check if element is hidden
-pub async fn Locator::isHidden(self : Locator, timeout? : Int) -> Bool {
+pub async fn Locator::is_hidden(self : Locator, timeout? : Int) -> Bool {
   consume(timeout)
   match self.eval_bool(self.element_expression() + "?.offsetParent === null") {
     Some(v) => v
@@ -526,7 +526,7 @@ pub async fn Locator::isHidden(self : Locator, timeout? : Int) -> Bool {
 
 ///|
 /// Check if element is enabled
-pub async fn Locator::isEnabled(self : Locator, timeout? : Int) -> Bool {
+pub async fn Locator::is_enabled(self : Locator, timeout? : Int) -> Bool {
   consume(timeout)
   match self.eval_bool(self.element_expression() + "?.disabled === false") {
     Some(v) => v
@@ -536,7 +536,7 @@ pub async fn Locator::isEnabled(self : Locator, timeout? : Int) -> Bool {
 
 ///|
 /// Check if element is disabled
-pub async fn Locator::isDisabled(self : Locator, timeout? : Int) -> Bool {
+pub async fn Locator::is_disabled(self : Locator, timeout? : Int) -> Bool {
   consume(timeout)
   match self.eval_bool(self.element_expression() + "?.disabled === true") {
     Some(v) => v
@@ -546,7 +546,7 @@ pub async fn Locator::isDisabled(self : Locator, timeout? : Int) -> Bool {
 
 ///|
 /// Check if element is editable
-pub async fn Locator::isEditable(self : Locator, timeout? : Int) -> Bool {
+pub async fn Locator::is_editable(self : Locator, timeout? : Int) -> Bool {
   consume(timeout)
   match self.eval_bool(self.element_expression() + "?.readOnly === false") {
     Some(v) => v
@@ -556,7 +556,7 @@ pub async fn Locator::isEditable(self : Locator, timeout? : Int) -> Bool {
 
 ///|
 /// Check if checkbox is checked
-pub async fn Locator::isChecked(self : Locator, timeout? : Int) -> Bool {
+pub async fn Locator::is_checked(self : Locator, timeout? : Int) -> Bool {
   consume(timeout)
   match self.eval_bool(self.element_expression() + "?.checked === true") {
     Some(v) => v
@@ -574,7 +574,7 @@ pub async fn Locator::count(self : Locator) -> Int {
 
 ///|
 /// Get bounding box
-pub async fn Locator::boundingBox(
+pub async fn Locator::bounding_box(
   self : Locator,
   timeout? : Int,
 ) -> BoundingBox? {
@@ -593,7 +593,7 @@ pub async fn Locator::boundingBox(
 
 ///|
 /// Wait for element to be visible/hidden/attached/detached
-pub async fn Locator::waitFor(
+pub async fn Locator::wait_for(
   self : Locator,
   state? : String,
   timeout? : Int,
@@ -602,19 +602,19 @@ pub async fn Locator::waitFor(
   let selector = self.state.val.selector
   match (state, timeout) {
     (Some(s), Some(t)) => {
-      let _ = page.waitForSelector(selector, state=s, timeout=t)
+      let _ = page.wait_for_selector(selector, state=s, timeout=t)
 
     }
     (Some(s), None) => {
-      let _ = page.waitForSelector(selector, state=s)
+      let _ = page.wait_for_selector(selector, state=s)
 
     }
     (None, Some(t)) => {
-      let _ = page.waitForSelector(selector, timeout=t)
+      let _ = page.wait_for_selector(selector, timeout=t)
 
     }
     (None, None) => {
-      let _ = page.waitForSelector(selector)
+      let _ = page.wait_for_selector(selector)
 
     }
   }
@@ -629,11 +629,11 @@ pub async fn Locator::screenshot(
   path? : String,
   type_? : String,
   quality? : Int,
-  omitBackground? : Bool,
+  omit_background? : Bool,
   timeout? : Int,
   scale? : String,
 ) -> ResponseBody {
-  consume((self, path, type_, quality, omitBackground, timeout, scale))
+  consume((self, path, type_, quality, omit_background, timeout, scale))
   async_noop()
   ResponseBody::bytes(b"")
 }
@@ -644,27 +644,27 @@ pub async fn Locator::screenshot(
 /// Evaluate JavaScript in element context
 pub async fn Locator::evaluate(
   self : Locator,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
   timeout? : Int,
 ) -> Json {
   consume(timeout)
   match arg {
-    Some(value) => self.state.val.page.evaluate(pageFunction, arg=value)
-    None => self.state.val.page.evaluate(pageFunction)
+    Some(value) => self.state.val.page.evaluate(page_function, arg=value)
+    None => self.state.val.page.evaluate(page_function)
   }
 }
 
 ///|
 /// Evaluate all matching elements
-pub async fn Locator::evaluateAll(
+pub async fn Locator::evaluate_all(
   self : Locator,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
 ) -> Json {
   match arg {
-    Some(value) => self.state.val.page.evaluate(pageFunction, arg=value)
-    None => self.state.val.page.evaluate(pageFunction)
+    Some(value) => self.state.val.page.evaluate(page_function, arg=value)
+    None => self.state.val.page.evaluate(page_function)
   }
 }
 
@@ -723,7 +723,7 @@ fn Locator::element_expression(self : Locator) -> String {
       not_text_literal +
       "; const scopeSelector = " +
       scope_literal +
-      "; const scopes = scopeSelector ? Array.from(document.querySelectorAll(scopeSelector)) : []; const inScope = (el) => { if (!scopeSelector) return true; return scopes.some(s => s.contains(el)); }; const norm = (s) => (s || '').replace(/[\\u200B\\u200C\\u200D\\uFEFF]/g,'').replace(/[\\u00a0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000]/g,' ').replace(/\\s+/g,' ').trim(); const query = norm(txt); const notQuery = notTxt ? norm(notTxt) : null; const textMatch = (t) => { const n = norm(t); return exact ? n === query : n.includes(query); }; const labelText = (el) => { const t = norm((el.innerText || el.textContent || '')); return t.length > 0 ? t : null; }; const labelledByText = (el) => { const value = el.getAttribute && el.getAttribute('aria-labelledby'); if (!value) return null; const raw = value.split(/\\s+/).filter(Boolean); const ids = []; for (const id of raw) { if (ids.indexOf(id) >= 0) continue; ids.push(id); } const nodes = []; for (const id of ids) { const node = document.getElementById(id); if (node) nodes.push(node); } nodes.sort((a,b) => { if (a === b) return 0; const pos = a.compareDocumentPosition(b); if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1; if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1; return 0; }); const parts = []; for (const node of nodes) { const lt = labelText(node); if (lt) parts.push(lt); } if (parts.length === 0) return null; return norm(parts.join(' ')); }; const ariaLabelText = (el) => { const value = el.getAttribute && el.getAttribute('aria-label'); if (!value) return null; const t = norm(value); return t.length > 0 ? t : null; }; const labelTextFor = (el) => { const parts = []; const id = el.getAttribute && el.getAttribute('id'); if (id) { const rel = Array.from(document.querySelectorAll('label[for=\"' + id + '\"]')); for (const label of rel) { const t = labelText(label); if (t) parts.push(t); } } if (parts.length > 0) return norm(parts.join(' ')); let parent = el.parentElement; while (parent) { if (parent.tagName === 'LABEL') { const t = labelText(parent); if (t) return t; break; } parent = parent.parentElement; } return null; }; const accessibleName = (el) => { const by = labelledByText(el); if (by) return by; const aria = ariaLabelText(el); if (aria) return aria; const lab = labelTextFor(el); if (lab) return lab; return null; }; const labelScore = (el) => { const by = el.getAttribute && el.getAttribute('aria-labelledby'); if (by && by.trim().length > 0) return 0; const id = el.getAttribute && el.getAttribute('id'); if (id) { const rel = document.querySelector('label[for=\"' + id + '\"]'); if (rel) return 1; } let parent = el.parentElement; while (parent) { if (parent.tagName === 'LABEL') return 2; parent = parent.parentElement; } const aria = el.getAttribute && el.getAttribute('aria-label'); if (aria && aria.trim().length > 0) return 3; return 4; }; const isVisible = (el) => { if (!el || el.nodeType !== 1) return false; let cur = el; while (cur) { if (cur.hidden) return false; const ariaHidden = cur.getAttribute && cur.getAttribute('aria-hidden'); if (ariaHidden === 'true') return false; const style = (cur.ownerDocument && cur.ownerDocument.defaultView) ? cur.ownerDocument.defaultView.getComputedStyle(cur) : null; if (style) { if (style.display === 'none' || style.visibility === 'hidden' || (style.visibility === 'collapse' && (cur.tagName === 'TABLE' || cur.tagName === 'TBODY' || cur.tagName === 'TR' || cur.tagName === 'TD' || cur.tagName === 'TH')) || style.contentVisibility === 'hidden') return false; const op = parseFloat(style.opacity || '1'); if (op == 0) return false; } cur = cur.parentElement; } if (el.getClientRects && el.getClientRects().length === 0) return false; if (el.getBoundingClientRect) { const r = el.getBoundingClientRect(); if (r && (r.width <= 0 || r.height <= 0)) return false; } return true; }; const nodeDepth = (n) => { let d = 0; let cur = n; while (cur) { d = d + 1; cur = cur.parentNode; } return d; }; const domDistance = (a, b) => { if (!a || !b) return 1e9; let da = nodeDepth(a); let db = nodeDepth(b); let pa = a; let pb = b; while (da > db) { pa = pa.parentNode; da = da - 1; } while (db > da) { pb = pb.parentNode; db = db - 1; } while (pa && pb && pa !== pb) { pa = pa.parentNode; pb = pb.parentNode; } if (!pa || !pb) return 1e9; const lca = pa; return (nodeDepth(a) - nodeDepth(lca)) + (nodeDepth(b) - nodeDepth(lca)); }; const labelNodesFor = (el) => { const nodes = []; const labelledBy = el.getAttribute && el.getAttribute('aria-labelledby'); if (labelledBy) { const raw = labelledBy.split(/\\s+/).filter(Boolean); const ids = []; for (const id of raw) { if (ids.indexOf(id) >= 0) continue; ids.push(id); } for (const id of ids) { const node = document.getElementById(id); if (node) nodes.push(node); } } const id = el.getAttribute && el.getAttribute('id'); if (id) { const rel = Array.from(document.querySelectorAll('label[for=\"' + id + '\"]')); for (const label of rel) nodes.push(label); } let parent = el.parentElement; while (parent) { if (parent.tagName === 'LABEL') { nodes.push(parent); break; } parent = parent.parentElement; } return nodes; }; const labelDistance = (el) => { const nodes = labelNodesFor(el); if (nodes.length === 0) return 1e9; let best = 1e9; for (const node of nodes) { if (node.tagName === 'LABEL') { const forId = node.getAttribute && node.getAttribute('for'); const id = el.getAttribute && el.getAttribute('id'); if (forId && id && forId === id) return 0; if (node.contains && node.contains(el)) return 1; } const d = domDistance(el, node); if (d < best) best = d; } return best; }; let matches = []; const candidates = Array.from(document.querySelectorAll('input, textarea, select, button, [aria-labelledby], [aria-label]')); for (const el of candidates) { if (!inScope(el)) continue; const name = accessibleName(el); if (!name) continue; if (notQuery && name.includes(notQuery)) continue; if (!textMatch(name)) continue; matches.push(el); } if (matches.length === 0) { for (const label of labels) { if (!inScope(label)) continue; const t = labelText(label); if (!t) continue; if (notQuery && t.includes(notQuery)) continue; if (!textMatch(t)) continue; let control = null; const forId = label.getAttribute && label.getAttribute('for'); if (forId) { const target = document.getElementById(forId); if (target) control = target; } if (!control && label.querySelector) { control = label.querySelector('input, textarea, select, button'); } if (!control) control = label; if (!inScope(control)) continue; matches.push(control); } } if (matches.length > 1) { const visible = matches.filter(isVisible); if (visible.length > 0) matches = visible; matches.sort((a, b) => { const da = labelDistance(a); const db = labelDistance(b); if (da < db) return -1; if (da > db) return 1; const sa = labelScore(a); const sb = labelScore(b); if (sa < sb) return -1; if (sa > sb) return 1; if (a === b) return 0; const pos = a.compareDocumentPosition(b); if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1; if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1; return 0; }); } } const pick = (function(){ " +
+      "; const scopes = scopeSelector ? Array.from(document.querySelectorAll(scopeSelector)) : []; const inScope = (el) => { if (!scopeSelector) return true; return scopes.some(s => s.contains(el)); }; const norm = (s) => (s || '').replace(/[\\u200B\\u200C\\u200D\\uFEFF]/g,'').replace(/[\\u00a0\\u1680\\u2000-\\u200A\\u202F\\u205F\\u3000]/g,' ').replace(/\\s+/g,' ').trim(); const query = norm(txt); const notQuery = notTxt ? norm(notTxt) : null; const textMatch = (t) => { const n = norm(t); return exact ? n === query : n.includes(query); }; const labelText = (el) => { const t = norm((el.inner_text || el.text_content || '')); return t.length > 0 ? t : null; }; const labelledByText = (el) => { const value = el.get_attribute && el.get_attribute('aria-labelledby'); if (!value) return null; const raw = value.split(/\\s+/).filter(Boolean); const ids = []; for (const id of raw) { if (ids.indexOf(id) >= 0) continue; ids.push(id); } const nodes = []; for (const id of ids) { const node = document.getElementById(id); if (node) nodes.push(node); } nodes.sort((a,b) => { if (a === b) return 0; const pos = a.compareDocumentPosition(b); if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1; if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1; return 0; }); const parts = []; for (const node of nodes) { const lt = labelText(node); if (lt) parts.push(lt); } if (parts.length === 0) return null; return norm(parts.join(' ')); }; const ariaLabelText = (el) => { const value = el.get_attribute && el.get_attribute('aria-label'); if (!value) return null; const t = norm(value); return t.length > 0 ? t : null; }; const labelTextFor = (el) => { const parts = []; const id = el.get_attribute && el.get_attribute('id'); if (id) { const rel = Array.from(document.querySelectorAll('label[for=\"' + id + '\"]')); for (const label of rel) { const t = labelText(label); if (t) parts.push(t); } } if (parts.length > 0) return norm(parts.join(' ')); let parent = el.parentElement; while (parent) { if (parent.tagName === 'LABEL') { const t = labelText(parent); if (t) return t; break; } parent = parent.parentElement; } return null; }; const accessibleName = (el) => { const by = labelledByText(el); if (by) return by; const aria = ariaLabelText(el); if (aria) return aria; const lab = labelTextFor(el); if (lab) return lab; return null; }; const labelScore = (el) => { const by = el.get_attribute && el.get_attribute('aria-labelledby'); if (by && by.trim().length > 0) return 0; const id = el.get_attribute && el.get_attribute('id'); if (id) { const rel = document.querySelector('label[for=\"' + id + '\"]'); if (rel) return 1; } let parent = el.parentElement; while (parent) { if (parent.tagName === 'LABEL') return 2; parent = parent.parentElement; } const aria = el.get_attribute && el.get_attribute('aria-label'); if (aria && aria.trim().length > 0) return 3; return 4; }; const is_visible = (el) => { if (!el || el.nodeType !== 1) return false; let cur = el; while (cur) { if (cur.hidden) return false; const ariaHidden = cur.get_attribute && cur.get_attribute('aria-hidden'); if (ariaHidden === 'true') return false; const style = (cur.ownerDocument && cur.ownerDocument.defaultView) ? cur.ownerDocument.defaultView.getComputedStyle(cur) : null; if (style) { if (style.display === 'none' || style.visibility === 'hidden' || (style.visibility === 'collapse' && (cur.tagName === 'TABLE' || cur.tagName === 'TBODY' || cur.tagName === 'TR' || cur.tagName === 'TD' || cur.tagName === 'TH')) || style.contentVisibility === 'hidden') return false; const op = parseFloat(style.opacity || '1'); if (op == 0) return false; } cur = cur.parentElement; } if (el.getClientRects && el.getClientRects().length === 0) return false; if (el.getBoundingClientRect) { const r = el.getBoundingClientRect(); if (r && (r.width <= 0 || r.height <= 0)) return false; } return true; }; const nodeDepth = (n) => { let d = 0; let cur = n; while (cur) { d = d + 1; cur = cur.parentNode; } return d; }; const domDistance = (a, b) => { if (!a || !b) return 1e9; let da = nodeDepth(a); let db = nodeDepth(b); let pa = a; let pb = b; while (da > db) { pa = pa.parentNode; da = da - 1; } while (db > da) { pb = pb.parentNode; db = db - 1; } while (pa && pb && pa !== pb) { pa = pa.parentNode; pb = pb.parentNode; } if (!pa || !pb) return 1e9; const lca = pa; return (nodeDepth(a) - nodeDepth(lca)) + (nodeDepth(b) - nodeDepth(lca)); }; const labelNodesFor = (el) => { const nodes = []; const labelledBy = el.get_attribute && el.get_attribute('aria-labelledby'); if (labelledBy) { const raw = labelledBy.split(/\\s+/).filter(Boolean); const ids = []; for (const id of raw) { if (ids.indexOf(id) >= 0) continue; ids.push(id); } for (const id of ids) { const node = document.getElementById(id); if (node) nodes.push(node); } } const id = el.get_attribute && el.get_attribute('id'); if (id) { const rel = Array.from(document.querySelectorAll('label[for=\"' + id + '\"]')); for (const label of rel) nodes.push(label); } let parent = el.parentElement; while (parent) { if (parent.tagName === 'LABEL') { nodes.push(parent); break; } parent = parent.parentElement; } return nodes; }; const labelDistance = (el) => { const nodes = labelNodesFor(el); if (nodes.length === 0) return 1e9; let best = 1e9; for (const node of nodes) { if (node.tagName === 'LABEL') { const forId = node.get_attribute && node.get_attribute('for'); const id = el.get_attribute && el.get_attribute('id'); if (forId && id && forId === id) return 0; if (node.contains && node.contains(el)) return 1; } const d = domDistance(el, node); if (d < best) best = d; } return best; }; let matches = []; const candidates = Array.from(document.querySelectorAll('input, textarea, select, button, [aria-labelledby], [aria-label]')); for (const el of candidates) { if (!inScope(el)) continue; const name = accessibleName(el); if (!name) continue; if (notQuery && name.includes(notQuery)) continue; if (!textMatch(name)) continue; matches.push(el); } if (matches.length === 0) { for (const label of labels) { if (!inScope(label)) continue; const t = labelText(label); if (!t) continue; if (notQuery && t.includes(notQuery)) continue; if (!textMatch(t)) continue; let control = null; const forId = label.get_attribute && label.get_attribute('for'); if (forId) { const target = document.getElementById(forId); if (target) control = target; } if (!control && label.querySelector) { control = label.querySelector('input, textarea, select, button'); } if (!control) control = label; if (!inScope(control)) continue; matches.push(control); } } if (matches.length > 1) { const visible = matches.filter(is_visible); if (visible.length > 0) matches = visible; matches.sort((a, b) => { const da = labelDistance(a); const db = labelDistance(b); if (da < db) return -1; if (da > db) return 1; const sa = labelScore(a); const sb = labelScore(b); if (sa < sb) return -1; if (sa > sb) return 1; if (a === b) return 0; const pos = a.compareDocumentPosition(b); if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return -1; if (pos & Node.DOCUMENT_POSITION_PRECEDING) return 1; return 0; }); } } const pick = (function(){ " +
       index_expr +
       " })(); return pick; })()"
     }
@@ -753,7 +753,7 @@ fn Locator::element_expression(self : Locator) -> String {
           exact_flag +
           "; const notTxt = " +
           not_text_literal +
-          "; const matches = els.filter(el => { const t = (el.textContent || '').trim(); if (notTxt && t.includes(notTxt)) return false; return exact ? t === txt : t.includes(txt); }); " +
+          "; const matches = els.filter(el => { const t = (el.text_content || '').trim(); if (notTxt && t.includes(notTxt)) return false; return exact ? t === txt : t.includes(txt); }); " +
           index_expr +
           " })()"
         }
@@ -777,7 +777,7 @@ fn Locator::element_expression(self : Locator) -> String {
               selector +
               ")); const notTxt = " +
               not_text_literal +
-              "; const matches = els.filter(el => { const t = (el.textContent || '').trim(); if (notTxt && t.includes(notTxt)) return false; return true; }); " +
+              "; const matches = els.filter(el => { const t = (el.text_content || '').trim(); if (notTxt && t.includes(notTxt)) return false; return true; }); " +
               index_expr +
               " })()"
             }

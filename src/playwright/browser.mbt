@@ -25,43 +25,43 @@ pub fn Browser::close_with_error_callback(
 
 ///|
 /// Create new browser context
-pub async fn Browser::newContext(
+pub async fn Browser::new_context(
   self : Browser,
   viewport? : (Int, Int),
-  userAgent? : String,
+  user_agent? : String,
   locale? : String,
-  timezoneId? : String,
+  timezone_id? : String,
   geolocation? : (Double, Double),
   permissions? : Array[String],
-  colorScheme? : String,
-  reducedMotion? : String,
-  forcedColors? : String,
-  acceptDownloads? : Bool,
-  ignoreHTTPSErrors? : Bool,
-  javaScriptEnabled? : Bool,
-  bypassCSP? : Bool,
+  color_scheme? : String,
+  reduced_motion? : String,
+  forced_colors? : String,
+  accept_downloads? : Bool,
+  ignore_https_errors? : Bool,
+  javascript_enabled? : Bool,
+  bypass_csp? : Bool,
   offline? : Bool,
-  deviceScaleFactor? : Double,
-  isMobile? : Bool,
-  hasTouch? : Bool,
+  device_scale_factor? : Double,
+  is_mobile? : Bool,
+  has_touch? : Bool,
 ) -> BrowserContext {
   let _ = viewport
-  let _ = userAgent
+  let _ = user_agent
   let _ = locale
-  let _ = timezoneId
+  let _ = timezone_id
   let _ = geolocation
   let _ = permissions
-  let _ = colorScheme
-  let _ = reducedMotion
-  let _ = forcedColors
-  let _ = acceptDownloads
-  let _ = ignoreHTTPSErrors
-  let _ = javaScriptEnabled
-  let _ = bypassCSP
+  let _ = color_scheme
+  let _ = reduced_motion
+  let _ = forced_colors
+  let _ = accept_downloads
+  let _ = ignore_https_errors
+  let _ = javascript_enabled
+  let _ = bypass_csp
   let _ = offline
-  let _ = deviceScaleFactor
-  let _ = isMobile
-  let _ = hasTouch
+  let _ = device_scale_factor
+  let _ = is_mobile
+  let _ = has_touch
   let state = self.state.val
   let user_context = match state.client.browser_create_user_context() {
     Ok(id) => id
@@ -79,35 +79,35 @@ pub async fn Browser::newContext(
 
 ///|
 /// Create new page (with default context)
-pub async fn Browser::newPage(
+pub async fn Browser::new_page(
   self : Browser,
   viewport? : (Int, Int),
-  userAgent? : String,
+  user_agent? : String,
   locale? : String,
-  timezoneId? : String,
-  ignoreHTTPSErrors? : Bool,
-  javaScriptEnabled? : Bool,
-  bypassCSP? : Bool,
+  timezone_id? : String,
+  ignore_https_errors? : Bool,
+  javascript_enabled? : Bool,
+  bypass_csp? : Bool,
   offline? : Bool,
-  colorScheme? : String,
-  deviceScaleFactor? : Double,
-  isMobile? : Bool,
-  hasTouch? : Bool,
+  color_scheme? : String,
+  device_scale_factor? : Double,
+  is_mobile? : Bool,
+  has_touch? : Bool,
 ) -> Page {
   let _ = viewport
-  let _ = userAgent
+  let _ = user_agent
   let _ = locale
-  let _ = timezoneId
-  let _ = ignoreHTTPSErrors
-  let _ = javaScriptEnabled
-  let _ = bypassCSP
+  let _ = timezone_id
+  let _ = ignore_https_errors
+  let _ = javascript_enabled
+  let _ = bypass_csp
   let _ = offline
-  let _ = colorScheme
-  let _ = deviceScaleFactor
-  let _ = isMobile
-  let _ = hasTouch
+  let _ = color_scheme
+  let _ = device_scale_factor
+  let _ = is_mobile
+  let _ = has_touch
   let ctx = self.ensure_default_context()
-  ctx.newPage()
+  ctx.new_page()
 }
 
 ///|
@@ -123,7 +123,7 @@ pub fn Browser::contexts(self : Browser) -> Array[BrowserContext] {
 
 ///|
 /// Check if browser is connected
-pub fn Browser::isConnected(self : Browser) -> Bool {
+pub fn Browser::is_connected(self : Browser) -> Bool {
   self.state.val.connected
 }
 

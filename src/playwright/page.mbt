@@ -8,10 +8,10 @@ pub async fn Page::goto(
   self : Page,
   url : String,
   timeout? : Int,
-  waitUntil? : String,
+  wait_until? : String,
   referer? : String,
 ) -> Response? {
-  consume((timeout, waitUntil, referer))
+  consume((timeout, wait_until, referer))
   let state = self.state.val
   let result = state.browser.state.val.client.browsing_context_navigate(
     state.context_id,
@@ -31,9 +31,9 @@ pub async fn Page::goto(
 pub async fn Page::reload(
   self : Page,
   timeout? : Int,
-  waitUntil? : String,
+  wait_until? : String,
 ) -> Response? {
-  consume((timeout, waitUntil))
+  consume((timeout, wait_until))
   let state = self.state.val
   let _ = state.browser.state.val.client.browsing_context_reload(
     state.context_id,
@@ -43,24 +43,24 @@ pub async fn Page::reload(
 
 ///|
 /// Go back in history
-pub async fn Page::goBack(
+pub async fn Page::go_back(
   self : Page,
   timeout? : Int,
-  waitUntil? : String,
+  wait_until? : String,
 ) -> Response? {
-  consume((timeout, waitUntil))
+  consume((timeout, wait_until))
   let _ = self.evaluate("history.back()")
   None
 }
 
 ///|
 /// Go forward in history
-pub async fn Page::goForward(
+pub async fn Page::go_forward(
   self : Page,
   timeout? : Int,
-  waitUntil? : String,
+  wait_until? : String,
 ) -> Response? {
-  consume((timeout, waitUntil))
+  consume((timeout, wait_until))
   let _ = self.evaluate("history.forward()")
   None
 }
@@ -91,13 +91,13 @@ pub async fn Page::content(self : Page) -> String {
 
 ///|
 /// Set page content
-pub async fn Page::setContent(
+pub async fn Page::set_content(
   self : Page,
   html : String,
   timeout? : Int,
-  waitUntil? : String,
+  wait_until? : String,
 ) -> Unit {
-  consume((timeout, waitUntil))
+  consume((timeout, wait_until))
   let expr = "(html) => { document.open(); document.write(html); document.close(); }"
   let args : Array[Json] = [
     Json::object({ "type": Json::string("string"), "value": Json::string(html) }),
@@ -125,7 +125,7 @@ pub fn Page::locator(self : Page, selector : String) -> Locator {
 
 ///|
 /// Get locator by role
-pub fn Page::getByRole(
+pub fn Page::get_by_role(
   self : Page,
   role : String,
   name? : String,
@@ -135,14 +135,14 @@ pub fn Page::getByRole(
   let selector = "[role=" + js_string_literal(role) + "]"
   let base = self.locator(selector)
   match name {
-    Some(text) => base.getByText(text, exact?)
+    Some(text) => base.get_by_text(text, exact?)
     None => base
   }
 }
 
 ///|
 /// Get locator by text
-pub fn Page::getByText(self : Page, text : String, exact? : Bool) -> Locator {
+pub fn Page::get_by_text(self : Page, text : String, exact? : Bool) -> Locator {
   let exact_flag = match exact {
     Some(true) => true
     _ => false
@@ -163,7 +163,7 @@ pub fn Page::getByText(self : Page, text : String, exact? : Bool) -> Locator {
 
 ///|
 /// Get locator by label
-pub fn Page::getByLabel(self : Page, text : String, exact? : Bool) -> Locator {
+pub fn Page::get_by_label(self : Page, text : String, exact? : Bool) -> Locator {
   let exact_flag = match exact {
     Some(true) => true
     _ => false
@@ -184,7 +184,7 @@ pub fn Page::getByLabel(self : Page, text : String, exact? : Bool) -> Locator {
 
 ///|
 /// Get locator by placeholder
-pub fn Page::getByPlaceholder(
+pub fn Page::get_by_placeholder(
   self : Page,
   text : String,
   exact? : Bool,
@@ -207,7 +207,7 @@ pub fn Page::getByPlaceholder(
 
 ///|
 /// Get locator by alt text
-pub fn Page::getByAltText(self : Page, text : String, exact? : Bool) -> Locator {
+pub fn Page::get_by_alt_text(self : Page, text : String, exact? : Bool) -> Locator {
   consume(exact)
   let selector = "[alt=" + js_string_literal(text) + "]"
   let state : LocatorState = {
@@ -226,7 +226,7 @@ pub fn Page::getByAltText(self : Page, text : String, exact? : Bool) -> Locator 
 
 ///|
 /// Get locator by title
-pub fn Page::getByTitle(self : Page, text : String, exact? : Bool) -> Locator {
+pub fn Page::get_by_title(self : Page, text : String, exact? : Bool) -> Locator {
   consume(exact)
   let selector = "[title=" + js_string_literal(text) + "]"
   let state : LocatorState = {
@@ -245,7 +245,7 @@ pub fn Page::getByTitle(self : Page, text : String, exact? : Bool) -> Locator {
 
 ///|
 /// Get locator by test ID
-pub fn Page::getByTestId(self : Page, testId : String) -> Locator {
+pub fn Page::get_by_test_id(self : Page, testId : String) -> Locator {
   let selector = "[data-testid=" + js_string_literal(testId) + "]"
   let state : LocatorState = {
     page: self,
@@ -263,7 +263,7 @@ pub fn Page::getByTestId(self : Page, testId : String) -> Locator {
 
 ///|
 /// Subscribe network event
-pub fn Page::onNetworkEvent(
+pub fn Page::on_network_event(
   self : Page,
   handler : (NetworkEvent) -> Unit,
 ) -> Unit {
@@ -272,8 +272,8 @@ pub fn Page::onNetworkEvent(
 
 ///|
 /// Subscribe request event
-pub fn Page::onRequest(self : Page, handler : (Request) -> Unit) -> Unit {
-  self.onNetworkEvent(fn(evt : NetworkEvent) {
+pub fn Page::on_request(self : Page, handler : (Request) -> Unit) -> Unit {
+  self.on_network_event(fn(evt : NetworkEvent) {
     match evt {
       NetworkEvent::Request(req) => handler(req)
       _ => ()
@@ -283,8 +283,8 @@ pub fn Page::onRequest(self : Page, handler : (Request) -> Unit) -> Unit {
 
 ///|
 /// Subscribe response event
-pub fn Page::onResponse(self : Page, handler : (Response) -> Unit) -> Unit {
-  self.onNetworkEvent(fn(evt : NetworkEvent) {
+pub fn Page::on_response(self : Page, handler : (Response) -> Unit) -> Unit {
+  self.on_network_event(fn(evt : NetworkEvent) {
     match evt {
       NetworkEvent::Response(resp) => handler(resp)
       _ => ()
@@ -294,11 +294,11 @@ pub fn Page::onResponse(self : Page, handler : (Response) -> Unit) -> Unit {
 
 ///|
 /// Subscribe response completed event
-pub fn Page::onResponseCompleted(
+pub fn Page::on_response_completed(
   self : Page,
   handler : (Response) -> Unit,
 ) -> Unit {
-  self.onNetworkEvent(fn(evt : NetworkEvent) {
+  self.on_network_event(fn(evt : NetworkEvent) {
     match evt {
       NetworkEvent::ResponseCompleted(resp) => handler(resp)
       _ => ()
@@ -312,18 +312,18 @@ pub async fn Page::click(
   self : Page,
   selector : String,
   button? : String,
-  clickCount? : Int,
+  click_count? : Int,
   delay? : Int,
   force? : Bool,
   modifiers? : Array[String],
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   position? : (Double, Double),
   timeout? : Int,
   trial? : Bool,
 ) -> Unit {
   consume(
     (
-      button, clickCount, delay, force, modifiers, noWaitAfter, position, timeout,
+      button, click_count, delay, force, modifiers, no_wait_after, position, timeout,
       trial,
     ),
   )
@@ -351,10 +351,10 @@ pub async fn Page::fill(
   selector : String,
   value : String,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   let locator = self.locator(selector)
   locator.fill(value)
 }
@@ -366,10 +366,10 @@ pub async fn Page::type_(
   selector : String,
   text : String,
   delay? : Int,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((delay, noWaitAfter, timeout))
+  consume((delay, no_wait_after, timeout))
   let locator = self.locator(selector)
   locator.type_(text)
 }
@@ -381,10 +381,10 @@ pub async fn Page::press(
   selector : String,
   key : String,
   delay? : Int,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((delay, noWaitAfter, timeout))
+  consume((delay, no_wait_after, timeout))
   let locator = self.locator(selector)
   locator.press(key)
 }
@@ -395,10 +395,10 @@ pub async fn Page::check(
   self : Page,
   selector : String,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   let locator = self.locator(selector)
   locator.check()
 }
@@ -409,25 +409,25 @@ pub async fn Page::uncheck(
   self : Page,
   selector : String,
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Unit {
-  consume((force, noWaitAfter, timeout))
+  consume((force, no_wait_after, timeout))
   let locator = self.locator(selector)
   locator.uncheck()
 }
 
 ///|
 /// Select option(s) in dropdown
-pub async fn Page::selectOption(
+pub async fn Page::select_option(
   self : Page,
   selector : String,
   values : Array[SelectOption],
   force? : Bool,
-  noWaitAfter? : Bool,
+  no_wait_after? : Bool,
   timeout? : Int,
 ) -> Array[String] {
-  consume((self, selector, values, force, noWaitAfter, timeout))
+  consume((self, selector, values, force, no_wait_after, timeout))
   async_noop()
   []
 }
@@ -462,7 +462,7 @@ pub async fn Page::focus(
 
 ///|
 /// Wait for selector
-pub async fn Page::waitForSelector(
+pub async fn Page::wait_for_selector(
   self : Page,
   selector : String,
   state? : String,
@@ -498,7 +498,7 @@ pub async fn Page::waitForSelector(
       "attached" =>
         if found {
           let handle = JSHandle::from_page(self, nodes[0])
-          break handle.asElement()
+          break handle.as_element()
         }
       "detached" => if not(found) { break None }
       "hidden" =>
@@ -516,7 +516,7 @@ pub async fn Page::waitForSelector(
           match self.is_node_visible(nodes[0]) {
             Some(true) => {
               let handle = JSHandle::from_page(self, nodes[0])
-              break handle.asElement()
+              break handle.as_element()
             }
             _ => ()
           }
@@ -545,7 +545,7 @@ pub async fn Page::waitForSelector(
 
 ///|
 /// Wait for load state
-pub async fn Page::waitForLoadState(
+pub async fn Page::wait_for_load_state(
   self : Page,
   state? : String,
   timeout? : Int,
@@ -567,11 +567,11 @@ pub async fn Page::waitForLoadState(
   }
   match timeout {
     Some(value) => {
-      let _ = self.waitForNavigation(timeout=value, waitUntil=desired)
+      let _ = self.wait_for_navigation(timeout=value, wait_until=desired)
 
     }
     None => {
-      let _ = self.waitForNavigation(waitUntil=desired)
+      let _ = self.wait_for_navigation(wait_until=desired)
 
     }
   }
@@ -579,13 +579,13 @@ pub async fn Page::waitForLoadState(
 
 ///|
 /// Wait for navigation
-pub async fn Page::waitForNavigation(
+pub async fn Page::wait_for_navigation(
   self : Page,
   timeout? : Int,
   url? : String,
-  waitUntil? : String,
+  wait_until? : String,
 ) -> Response? {
-  let wait_method = match waitUntil {
+  let wait_method = match wait_until {
     Some("domcontentloaded") => "browsingContext.domContentLoaded"
     Some("load") => "browsingContext.load"
     Some("networkidle") => "browsingContext.load"
@@ -634,13 +634,13 @@ pub async fn Page::waitForNavigation(
 
 ///|
 /// Wait for URL
-pub async fn Page::waitForURL(
+pub async fn Page::wait_for_url(
   self : Page,
   url : String,
   timeout? : Int,
-  waitUntil? : String,
+  wait_until? : String,
 ) -> Unit {
-  consume(waitUntil)
+  consume(wait_until)
   if self.state.val.url == url {
     return
   }
@@ -682,14 +682,14 @@ pub async fn Page::waitForURL(
 
 ///|
 /// Wait for network request
-pub async fn Page::waitForRequest(
+pub async fn Page::wait_for_request(
   self : Page,
   url : String,
   timeout? : Int,
-  matchMode? : String,
+  match_mode? : String,
   predicate? : (Request) -> Bool,
 ) -> Request? {
-  let match_mode = resolve_match_mode(url, matchMode)
+  let match_mode = resolve_match_mode(url, match_mode)
   let timeout_ms = match timeout {
     Some(value) => value
     None => 30_000
@@ -722,15 +722,15 @@ pub async fn Page::waitForRequest(
 
 ///|
 /// Wait for network response
-pub async fn Page::waitForResponse(
+pub async fn Page::wait_for_response(
   self : Page,
   url : String,
   timeout? : Int,
-  matchMode? : String,
+  match_mode? : String,
   stage? : String,
   predicate? : (Response) -> Bool,
 ) -> Response? {
-  let match_mode = resolve_match_mode(url, matchMode)
+  let match_mode = resolve_match_mode(url, match_mode)
   let resolved_stage = resolve_response_stage(stage)
   let timeout_ms = match timeout {
     Some(value) => value
@@ -769,24 +769,24 @@ pub async fn Page::waitForResponse(
 
 ///|
 /// Wait for timeout
-pub async fn Page::waitForTimeout(self : Page, timeout : Int) -> Unit {
+pub async fn Page::wait_for_timeout(self : Page, timeout : Int) -> Unit {
   consume(self)
   sleep_ms(timeout)
 }
 
 ///|
 /// Wait for function to return truthy value
-pub async fn Page::waitForFunction(
+pub async fn Page::wait_for_function(
   self : Page,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
   polling? : Int,
   timeout? : Int,
 ) -> Json {
   consume((polling, timeout))
   match arg {
-    Some(value) => self.evaluate(pageFunction, arg=value)
-    None => self.evaluate(pageFunction)
+    Some(value) => self.evaluate(page_function, arg=value)
+    None => self.evaluate(page_function)
   }
 }
 
@@ -794,13 +794,13 @@ pub async fn Page::waitForFunction(
 /// Evaluate JavaScript in page context
 pub async fn Page::evaluate(
   self : Page,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
 ) -> Json {
   consume(arg)
   let state = self.state.val
   let result = state.browser.state.val.client.script_evaluate(
-    pageFunction,
+    page_function,
     state.context_id,
   )
   match result {
@@ -815,15 +815,15 @@ pub async fn Page::evaluate(
 
 ///|
 /// Evaluate JavaScript and return handle
-pub async fn Page::evaluateHandle(
+pub async fn Page::evaluate_handle(
   self : Page,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
 ) -> JSHandle {
   consume(arg)
   let state = self.state.val
   let result = state.browser.state.val.client.script_evaluate(
-    pageFunction,
+    page_function,
     state.context_id,
   )
   match result {
@@ -843,14 +843,14 @@ pub async fn Page::screenshot(
   path? : String,
   type_? : String,
   quality? : Int,
-  fullPage? : Bool,
+  full_page? : Bool,
   clip? : Clip,
-  omitBackground? : Bool,
+  omit_background? : Bool,
   timeout? : Int,
   scale? : String,
 ) -> ResponseBody {
   consume(
-    (self, path, type_, quality, fullPage, clip, omitBackground, timeout, scale),
+    (self, path, type_, quality, full_page, clip, omit_background, timeout, scale),
   )
   async_noop()
   ResponseBody::bytes(b"")
@@ -862,22 +862,22 @@ pub async fn Page::pdf(
   self : Page,
   path? : String,
   scale? : Double,
-  displayHeaderFooter? : Bool,
-  headerTemplate? : String,
-  footerTemplate? : String,
-  printBackground? : Bool,
+  display_header_footer? : Bool,
+  header_template? : String,
+  footer_template? : String,
+  print_background? : Bool,
   landscape? : Bool,
-  pageRanges? : String,
+  page_ranges? : String,
   format? : String,
   width? : String,
   height? : String,
   margin? : Margin,
-  preferCSSPageSize? : Bool,
+  prefer_css_page_size? : Bool,
 ) -> ResponseBody {
   consume(
     (
-      self, path, scale, displayHeaderFooter, headerTemplate, footerTemplate, printBackground,
-      landscape, pageRanges, format, width, height, margin, preferCSSPageSize,
+      self, path, scale, display_header_footer, header_template, footer_template, print_background,
+      landscape, page_ranges, format, width, height, margin, prefer_css_page_size,
     ),
   )
   async_noop()
@@ -886,8 +886,8 @@ pub async fn Page::pdf(
 
 ///|
 /// Close page
-pub async fn Page::close(self : Page, runBeforeUnload? : Bool) -> Unit {
-  consume(runBeforeUnload)
+pub async fn Page::close(self : Page, run_before_unload? : Bool) -> Unit {
+  consume(run_before_unload)
   let state = self.state.val
   let _ = state.browser.state.val.client.browsing_context_close(
     state.context_id,
@@ -908,21 +908,21 @@ pub fn Page::close_with_error_callback(
 
 ///|
 /// Check if page is closed
-pub fn Page::isClosed(self : Page) -> Bool {
+pub fn Page::is_closed(self : Page) -> Bool {
   consume(self)
   false
 }
 
 ///|
 /// Bring page to front
-pub async fn Page::bringToFront(self : Page) -> Unit {
+pub async fn Page::bring_to_front(self : Page) -> Unit {
   consume(self)
   async_noop()
 }
 
 ///|
 /// Set viewport size
-pub async fn Page::setViewportSize(
+pub async fn Page::set_viewport_size(
   self : Page,
   width : Int,
   height : Int,
@@ -933,21 +933,21 @@ pub async fn Page::setViewportSize(
 
 ///|
 /// Get viewport size
-pub fn Page::viewportSize(self : Page) -> (Int, Int)? {
+pub fn Page::viewport_size(self : Page) -> (Int, Int)? {
   consume(self)
   None
 }
 
 ///|
 /// Set extra HTTP headers
-pub async fn Page::setExtraHTTPHeaders(self : Page, headers : Headers) -> Unit {
+pub async fn Page::set_extra_http_headers(self : Page, headers : Headers) -> Unit {
   consume((self, headers))
   async_noop()
 }
 
 ///|
 /// Add script tag
-pub async fn Page::addScriptTag(
+pub async fn Page::add_script_tag(
   self : Page,
   url? : String,
   path? : String,
@@ -961,7 +961,7 @@ pub async fn Page::addScriptTag(
 
 ///|
 /// Add style tag
-pub async fn Page::addStyleTag(
+pub async fn Page::add_style_tag(
   self : Page,
   url? : String,
   path? : String,
@@ -974,7 +974,7 @@ pub async fn Page::addStyleTag(
 
 ///|
 /// Expose function to page
-pub async fn Page::exposeFunction(
+pub async fn Page::expose_function(
   self : Page,
   name : String,
   callback : Json,
@@ -985,13 +985,13 @@ pub async fn Page::exposeFunction(
 
 ///|
 /// Set default navigation timeout
-pub fn Page::setDefaultNavigationTimeout(self : Page, timeout : Int) -> Unit {
+pub fn Page::set_default_navigation_timeout(self : Page, timeout : Int) -> Unit {
   consume((self, timeout))
 }
 
 ///|
 /// Set default timeout
-pub fn Page::setDefaultTimeout(self : Page, timeout : Int) -> Unit {
+pub fn Page::set_default_timeout(self : Page, timeout : Int) -> Unit {
   consume((self, timeout))
 }
 
@@ -1046,7 +1046,7 @@ async fn Page::is_node_visible(self : Page, node : Json) -> Bool? {
   let state = self.state.val
   let args : Array[Json] = [node]
   let result = state.browser.state.val.client.script_call_function(
-    "(node) => { if (!node || !(node instanceof Element)) return false; if (node.hidden) return false; let el = node; while (el) { if (el.hidden) return false; if (el.getAttribute && el.getAttribute('aria-hidden') === 'true') return false; const style = getComputedStyle(el); if (!style) return false; const opacity = parseFloat(style.opacity || '1'); if (opacity <= 0) return false; if (style.visibility === 'hidden' || style.visibility === 'collapse' || style.display === 'none' || style.contentVisibility === 'hidden') return false; if (el instanceof HTMLDetailsElement && !el.open) { const summary = el.querySelector('summary'); if (summary && !summary.contains(node)) return false; } el = el.parentElement; } if (node.getClientRects().length === 0) return false; const rect = node.getBoundingClientRect(); return rect.width > 0 && rect.height > 0; }",
+    "(node) => { if (!node || !(node instanceof Element)) return false; if (node.hidden) return false; let el = node; while (el) { if (el.hidden) return false; if (el.get_attribute && el.get_attribute('aria-hidden') === 'true') return false; const style = getComputedStyle(el); if (!style) return false; const opacity = parseFloat(style.opacity || '1'); if (opacity <= 0) return false; if (style.visibility === 'hidden' || style.visibility === 'collapse' || style.display === 'none' || style.contentVisibility === 'hidden') return false; if (el instanceof HTMLDetailsElement && !el.open) { const summary = el.querySelector('summary'); if (summary && !summary.contains(node)) return false; } el = el.parentElement; } if (node.getClientRects().length === 0) return false; const rect = node.getBoundingClientRect(); return rect.width > 0 && rect.height > 0; }",
     state.context_id,
     arguments=args,
   )
@@ -1175,9 +1175,9 @@ fn resolve_match_mode(pattern : String, match_mode : String?) -> String {
       if lower == "contains" || lower == "include" || lower == "substring" {
         "contains"
       } else if lower == "startswith" || lower == "prefix" {
-        "startsWith"
+        "starts_with"
       } else if lower == "endswith" || lower == "suffix" {
-        "endsWith"
+        "ends_with"
       } else if lower == "glob" || lower == "wildcard" {
         "glob"
       } else if lower == "regex" || lower == "re" {
@@ -1218,8 +1218,8 @@ fn resolve_response_stage(stage : String?) -> String {
 fn url_matches(url : String, pattern : String, match_mode : String) -> Bool {
   match match_mode {
     "contains" => url.contains(pattern)
-    "startsWith" => url.has_prefix(pattern)
-    "endsWith" => url.has_suffix(pattern)
+    "starts_with" => url.has_prefix(pattern)
+    "ends_with" => url.has_suffix(pattern)
     "glob" => glob_match(url, pattern)
     "regex" => regex_match(url, normalize_regex_pattern(pattern))
     _ => url == pattern

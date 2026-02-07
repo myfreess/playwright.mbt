@@ -40,27 +40,27 @@ pub struct Browser {
 pub async fn Browser::close(Self) -> Unit
 pub fn Browser::close_with_error_callback(Self, (Error) -> Unit) -> Unit
 pub fn Browser::contexts(Self) -> Array[BrowserContext]
-pub fn Browser::isConnected(Self) -> Bool
-pub async fn Browser::newContext(Self, viewport? : (Int, Int), userAgent? : String, locale? : String, timezoneId? : String, geolocation? : (Double, Double), permissions? : Array[String], colorScheme? : String, reducedMotion? : String, forcedColors? : String, acceptDownloads? : Bool, ignoreHTTPSErrors? : Bool, javaScriptEnabled? : Bool, bypassCSP? : Bool, offline? : Bool, deviceScaleFactor? : Double, isMobile? : Bool, hasTouch? : Bool) -> BrowserContext
-pub async fn Browser::newPage(Self, viewport? : (Int, Int), userAgent? : String, locale? : String, timezoneId? : String, ignoreHTTPSErrors? : Bool, javaScriptEnabled? : Bool, bypassCSP? : Bool, offline? : Bool, colorScheme? : String, deviceScaleFactor? : Double, isMobile? : Bool, hasTouch? : Bool) -> Page
+pub fn Browser::is_connected(Self) -> Bool
+pub async fn Browser::new_context(Self, viewport? : (Int, Int), user_agent? : String, locale? : String, timezone_id? : String, geolocation? : (Double, Double), permissions? : Array[String], color_scheme? : String, reduced_motion? : String, forced_colors? : String, accept_downloads? : Bool, ignore_https_errors? : Bool, javascript_enabled? : Bool, bypass_csp? : Bool, offline? : Bool, device_scale_factor? : Double, is_mobile? : Bool, has_touch? : Bool) -> BrowserContext
+pub async fn Browser::new_page(Self, viewport? : (Int, Int), user_agent? : String, locale? : String, timezone_id? : String, ignore_https_errors? : Bool, javascript_enabled? : Bool, bypass_csp? : Bool, offline? : Bool, color_scheme? : String, device_scale_factor? : Double, is_mobile? : Bool, has_touch? : Bool) -> Page
 pub fn Browser::version(Self) -> String
 
 pub struct BrowserContext {
   // private fields
 }
-pub async fn BrowserContext::addCookies(Self, Array[Cookie]) -> Unit
-pub async fn BrowserContext::clearCookies(Self) -> Unit
-pub async fn BrowserContext::clearPermissions(Self) -> Unit
+pub async fn BrowserContext::add_cookies(Self, Array[Cookie]) -> Unit
+pub async fn BrowserContext::clear_cookies(Self) -> Unit
+pub async fn BrowserContext::clear_permissions(Self) -> Unit
 pub async fn BrowserContext::close(Self) -> Unit
 pub fn BrowserContext::close_with_error_callback(Self, (Error) -> Unit) -> Unit
 pub async fn BrowserContext::cookies(Self, urls? : Array[String]) -> Array[Cookie]
-pub async fn BrowserContext::grantPermissions(Self, Array[String], origin? : String) -> Unit
-pub async fn BrowserContext::newPage(Self) -> Page
+pub async fn BrowserContext::grant_permissions(Self, Array[String], origin? : String) -> Unit
+pub async fn BrowserContext::new_page(Self) -> Page
 pub fn BrowserContext::pages(Self) -> Array[Page]
-pub fn BrowserContext::setDefaultNavigationTimeout(Self, Int) -> Unit
-pub fn BrowserContext::setDefaultTimeout(Self, Int) -> Unit
-pub async fn BrowserContext::setGeolocation(Self, Double, Double, accuracy? : Double) -> Unit
-pub async fn BrowserContext::setOffline(Self, Bool) -> Unit
+pub fn BrowserContext::set_default_navigation_timeout(Self, Int) -> Unit
+pub fn BrowserContext::set_default_timeout(Self, Int) -> Unit
+pub async fn BrowserContext::set_geolocation(Self, Double, Double, accuracy? : Double) -> Unit
+pub async fn BrowserContext::set_offline(Self, Bool) -> Unit
 
 pub enum BrowserKind {
   Chromium
@@ -74,9 +74,10 @@ pub struct BrowserType {
   kind : BrowserKind
 }
 pub async fn BrowserType::connect(Self, String) -> Browser
+pub async fn BrowserType::connect_over_websocket(Self, String) -> Browser
 pub async fn BrowserType::connect_with_transport(Self, @bidi.Transport) -> Browser
-pub async fn BrowserType::launch(Self, headless? : Bool, args? : Array[String], channel? : String, chromiumSandbox? : Bool, devtools? : Bool, downloadsPath? : String, executablePath? : String, handleSIGHUP? : Bool, handleSIGINT? : Bool, handleSIGTERM? : Bool, slowMo? : Int, timeout? : Int) -> Browser
-pub async fn BrowserType::launchPersistentContext(Self, String, headless? : Bool, args? : Array[String], channel? : String, slowMo? : Int, timeout? : Int) -> BrowserContext
+pub async fn BrowserType::launch(Self, headless? : Bool, args? : Array[String], channel? : String, chromium_sandbox? : Bool, devtools? : Bool, downloads_path? : String, executable_path? : String, handle_sighup? : Bool, handle_sigint? : Bool, handle_sigterm? : Bool, slow_mo? : Int, timeout? : Int) -> Browser
+pub async fn BrowserType::launch_persistent_context(Self, String, headless? : Bool, args? : Array[String], channel? : String, slow_mo? : Int, timeout? : Int) -> BrowserContext
 pub fn BrowserType::name(Self) -> String
 pub impl Show for BrowserType
 
@@ -98,12 +99,12 @@ pub struct Cookie {
   domain : String?
   path : String?
   expires : Double?
-  httpOnly : Bool?
+  http_only : Bool?
   secure : Bool?
-  sameSite : String?
+  same_site : String?
 }
 pub fn Cookie::from_json(Json) -> Self?
-pub fn Cookie::new(String, String, url? : String, domain? : String, path? : String, expires? : Double, httpOnly? : Bool, secure? : Bool, sameSite? : String) -> Self
+pub fn Cookie::new(String, String, url? : String, domain? : String, path? : String, expires? : Double, http_only? : Bool, secure? : Bool, same_site? : String) -> Self
 pub fn Cookie::to_json(Self) -> Json
 pub impl Eq for Cookie
 pub impl Show for Cookie
@@ -111,12 +112,12 @@ pub impl Show for Cookie
 pub struct ElementHandle {
   // private fields
 }
-pub fn ElementHandle::asJSHandle(Self) -> JSHandle
+pub fn ElementHandle::as_js_handle(Self) -> JSHandle
 pub async fn ElementHandle::dispose(Self) -> Unit
 pub async fn ElementHandle::evaluate(Self, String, arg? : Json) -> Json
-pub async fn ElementHandle::evaluateHandle(Self, String, arg? : Json) -> JSHandle
+pub async fn ElementHandle::evaluate_handle(Self, String, arg? : Json) -> JSHandle
 pub fn ElementHandle::from_handle(JSHandle) -> Self
-pub fn ElementHandle::jsonValue(Self) -> Json
+pub fn ElementHandle::json_value(Self) -> Json
 
 pub struct Expect[T] {
   actual : T
@@ -182,13 +183,13 @@ pub struct Frame {
   url_ : String
   name_ : String
 }
-pub fn Frame::childFrames(Self) -> Array[Self]
+pub fn Frame::child_frames(Self) -> Array[Self]
 pub async fn Frame::content(Self) -> String
-pub async fn Frame::goto(Self, String, timeout? : Int, waitUntil? : String) -> Response?
-pub fn Frame::isDetached(Self) -> Bool
+pub async fn Frame::goto(Self, String, timeout? : Int, wait_until? : String) -> Response?
+pub fn Frame::is_detached(Self) -> Bool
 pub fn Frame::locator(Self, String) -> Locator
 pub fn Frame::name(Self) -> String
-pub fn Frame::parentFrame(Self) -> Self?
+pub fn Frame::parent_frame(Self) -> Self?
 pub async fn Frame::title(Self) -> String
 pub fn Frame::url(Self) -> String
 pub impl Show for Frame
@@ -207,14 +208,14 @@ pub impl Show for Headers
 pub struct JSHandle {
   // private fields
 }
-pub fn JSHandle::asElement(Self) -> ElementHandle?
+pub fn JSHandle::as_element(Self) -> ElementHandle?
 pub async fn JSHandle::dispose(Self) -> Unit
 pub async fn JSHandle::evaluate(Self, String, arg? : Json) -> Json
-pub async fn JSHandle::evaluateHandle(Self, String, arg? : Json) -> Self
+pub async fn JSHandle::evaluate_handle(Self, String, arg? : Json) -> Self
 pub fn JSHandle::from_json(Json) -> Self
 pub fn JSHandle::from_remote_value(Json) -> Self
-pub fn JSHandle::isNull(Self) -> Bool
-pub fn JSHandle::jsonValue(Self) -> Json
+pub fn JSHandle::is_null(Self) -> Bool
+pub fn JSHandle::json_value(Self) -> Json
 pub fn JSHandle::null() -> Self
 pub fn JSHandle::raw(Self) -> Json
 
@@ -231,49 +232,49 @@ pub impl Show for Length
 pub struct Locator {
   // private fields
 }
-pub async fn Locator::allInnerTexts(Self) -> Array[String]
-pub async fn Locator::allTextContents(Self) -> Array[String]
+pub async fn Locator::all_inner_texts(Self) -> Array[String]
+pub async fn Locator::all_text_contents(Self) -> Array[String]
 pub async fn Locator::blur(Self, timeout? : Int) -> Unit
-pub async fn Locator::boundingBox(Self, timeout? : Int) -> BoundingBox?
-pub async fn Locator::check(Self, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Locator::clear(Self, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Locator::click(Self, button? : String, clickCount? : Int, delay? : Int, force? : Bool, modifiers? : Array[String], noWaitAfter? : Bool, position? : (Double, Double), timeout? : Int, trial? : Bool) -> Unit
+pub async fn Locator::bounding_box(Self, timeout? : Int) -> BoundingBox?
+pub async fn Locator::check(Self, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Locator::clear(Self, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Locator::click(Self, button? : String, click_count? : Int, delay? : Int, force? : Bool, modifiers? : Array[String], no_wait_after? : Bool, position? : (Double, Double), timeout? : Int, trial? : Bool) -> Unit
 pub async fn Locator::count(Self) -> Int
 pub async fn Locator::dblclick(Self, timeout? : Int, force? : Bool) -> Unit
 pub async fn Locator::evaluate(Self, String, arg? : Json, timeout? : Int) -> Json
-pub async fn Locator::evaluateAll(Self, String, arg? : Json) -> Json
-pub async fn Locator::fill(Self, String, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub fn Locator::filter(Self, has? : Self, hasNot? : Self, hasText? : String, hasNotText? : String) -> Self
+pub async fn Locator::evaluate_all(Self, String, arg? : Json) -> Json
+pub async fn Locator::fill(Self, String, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub fn Locator::filter(Self, has? : Self, has_not? : Self, has_text? : String, has_not_text? : String) -> Self
 pub fn Locator::first(Self) -> Self
 pub async fn Locator::focus(Self, timeout? : Int) -> Unit
-pub async fn Locator::getAttribute(Self, String, timeout? : Int) -> String?
-pub fn Locator::getByLabel(Self, String, exact? : Bool) -> Self
-pub fn Locator::getByPlaceholder(Self, String, exact? : Bool) -> Self
-pub fn Locator::getByRole(Self, String, name? : String, exact? : Bool) -> Self
-pub fn Locator::getByTestId(Self, String) -> Self
-pub fn Locator::getByText(Self, String, exact? : Bool) -> Self
+pub async fn Locator::get_attribute(Self, String, timeout? : Int) -> String?
+pub fn Locator::get_by_label(Self, String, exact? : Bool) -> Self
+pub fn Locator::get_by_placeholder(Self, String, exact? : Bool) -> Self
+pub fn Locator::get_by_role(Self, String, name? : String, exact? : Bool) -> Self
+pub fn Locator::get_by_test_id(Self, String) -> Self
+pub fn Locator::get_by_text(Self, String, exact? : Bool) -> Self
 pub async fn Locator::hover(Self, force? : Bool, modifiers? : Array[String], position? : (Double, Double), timeout? : Int, trial? : Bool) -> Unit
-pub async fn Locator::innerHTML(Self, timeout? : Int) -> String
-pub async fn Locator::innerText(Self, timeout? : Int) -> String
-pub async fn Locator::inputValue(Self, timeout? : Int) -> String
-pub async fn Locator::isChecked(Self, timeout? : Int) -> Bool
-pub async fn Locator::isDisabled(Self, timeout? : Int) -> Bool
-pub async fn Locator::isEditable(Self, timeout? : Int) -> Bool
-pub async fn Locator::isEnabled(Self, timeout? : Int) -> Bool
-pub async fn Locator::isHidden(Self, timeout? : Int) -> Bool
-pub async fn Locator::isVisible(Self, timeout? : Int) -> Bool
+pub async fn Locator::inner_html(Self, timeout? : Int) -> String
+pub async fn Locator::inner_text(Self, timeout? : Int) -> String
+pub async fn Locator::input_value(Self, timeout? : Int) -> String
+pub async fn Locator::is_checked(Self, timeout? : Int) -> Bool
+pub async fn Locator::is_disabled(Self, timeout? : Int) -> Bool
+pub async fn Locator::is_editable(Self, timeout? : Int) -> Bool
+pub async fn Locator::is_enabled(Self, timeout? : Int) -> Bool
+pub async fn Locator::is_hidden(Self, timeout? : Int) -> Bool
+pub async fn Locator::is_visible(Self, timeout? : Int) -> Bool
 pub fn Locator::last(Self) -> Self
 pub fn Locator::locator(Self, String) -> Self
 pub fn Locator::nth(Self, Int) -> Self
-pub async fn Locator::press(Self, String, delay? : Int, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Locator::screenshot(Self, path? : String, type_? : String, quality? : Int, omitBackground? : Bool, timeout? : Int, scale? : String) -> ResponseBody
-pub async fn Locator::scrollIntoViewIfNeeded(Self, timeout? : Int) -> Unit
-pub async fn Locator::selectOption(Self, Array[SelectOption], force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Array[String]
-pub async fn Locator::setChecked(Self, Bool, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Locator::textContent(Self, timeout? : Int) -> String?
-pub async fn Locator::type_(Self, String, delay? : Int, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Locator::uncheck(Self, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Locator::waitFor(Self, state? : String, timeout? : Int) -> Unit
+pub async fn Locator::press(Self, String, delay? : Int, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Locator::screenshot(Self, path? : String, type_? : String, quality? : Int, omit_background? : Bool, timeout? : Int, scale? : String) -> ResponseBody
+pub async fn Locator::scroll_into_view_if_needed(Self, timeout? : Int) -> Unit
+pub async fn Locator::select_option(Self, Array[SelectOption], force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Array[String]
+pub async fn Locator::set_checked(Self, Bool, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Locator::text_content(Self, timeout? : Int) -> String?
+pub async fn Locator::type_(Self, String, delay? : Int, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Locator::uncheck(Self, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Locator::wait_for(Self, state? : String, timeout? : Int) -> Unit
 
 pub struct Margin {
   top : Length?
@@ -296,73 +297,73 @@ pub impl Show for NetworkEvent
 pub struct Page {
   // private fields
 }
-pub async fn Page::addScriptTag(Self, url? : String, path? : String, content? : String, type_? : String) -> Json
-pub async fn Page::addStyleTag(Self, url? : String, path? : String, content? : String) -> Json
-pub async fn Page::bringToFront(Self) -> Unit
-pub async fn Page::check(Self, String, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Page::click(Self, String, button? : String, clickCount? : Int, delay? : Int, force? : Bool, modifiers? : Array[String], noWaitAfter? : Bool, position? : (Double, Double), timeout? : Int, trial? : Bool) -> Unit
-pub async fn Page::close(Self, runBeforeUnload? : Bool) -> Unit
+pub async fn Page::add_script_tag(Self, url? : String, path? : String, content? : String, type_? : String) -> Json
+pub async fn Page::add_style_tag(Self, url? : String, path? : String, content? : String) -> Json
+pub async fn Page::bring_to_front(Self) -> Unit
+pub async fn Page::check(Self, String, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Page::click(Self, String, button? : String, click_count? : Int, delay? : Int, force? : Bool, modifiers? : Array[String], no_wait_after? : Bool, position? : (Double, Double), timeout? : Int, trial? : Bool) -> Unit
+pub async fn Page::close(Self, run_before_unload? : Bool) -> Unit
 pub fn Page::close_with_error_callback(Self, (Error) -> Unit) -> Unit
 pub async fn Page::content(Self) -> String
 pub async fn Page::dblclick(Self, String, timeout? : Int, force? : Bool) -> Unit
 pub async fn Page::evaluate(Self, String, arg? : Json) -> Json
-pub async fn Page::evaluateHandle(Self, String, arg? : Json) -> JSHandle
-pub async fn Page::exposeFunction(Self, String, Json) -> Unit
-pub async fn Page::fill(Self, String, String, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
+pub async fn Page::evaluate_handle(Self, String, arg? : Json) -> JSHandle
+pub async fn Page::expose_function(Self, String, Json) -> Unit
+pub async fn Page::fill(Self, String, String, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
 pub async fn Page::focus(Self, String, timeout? : Int) -> Unit
-pub fn Page::getByAltText(Self, String, exact? : Bool) -> Locator
-pub fn Page::getByLabel(Self, String, exact? : Bool) -> Locator
-pub fn Page::getByPlaceholder(Self, String, exact? : Bool) -> Locator
-pub fn Page::getByRole(Self, String, name? : String, exact? : Bool) -> Locator
-pub fn Page::getByTestId(Self, String) -> Locator
-pub fn Page::getByText(Self, String, exact? : Bool) -> Locator
-pub fn Page::getByTitle(Self, String, exact? : Bool) -> Locator
-pub async fn Page::goBack(Self, timeout? : Int, waitUntil? : String) -> Response?
-pub async fn Page::goForward(Self, timeout? : Int, waitUntil? : String) -> Response?
-pub async fn Page::goto(Self, String, timeout? : Int, waitUntil? : String, referer? : String) -> Response?
+pub fn Page::get_by_alt_text(Self, String, exact? : Bool) -> Locator
+pub fn Page::get_by_label(Self, String, exact? : Bool) -> Locator
+pub fn Page::get_by_placeholder(Self, String, exact? : Bool) -> Locator
+pub fn Page::get_by_role(Self, String, name? : String, exact? : Bool) -> Locator
+pub fn Page::get_by_test_id(Self, String) -> Locator
+pub fn Page::get_by_text(Self, String, exact? : Bool) -> Locator
+pub fn Page::get_by_title(Self, String, exact? : Bool) -> Locator
+pub async fn Page::go_back(Self, timeout? : Int, wait_until? : String) -> Response?
+pub async fn Page::go_forward(Self, timeout? : Int, wait_until? : String) -> Response?
+pub async fn Page::goto(Self, String, timeout? : Int, wait_until? : String, referer? : String) -> Response?
 pub async fn Page::hover(Self, String, force? : Bool, modifiers? : Array[String], position? : (Double, Double), timeout? : Int, trial? : Bool) -> Unit
-pub fn Page::isClosed(Self) -> Bool
+pub fn Page::is_closed(Self) -> Bool
 pub fn Page::locator(Self, String) -> Locator
-pub fn Page::onNetworkEvent(Self, (NetworkEvent) -> Unit) -> Unit
-pub fn Page::onRequest(Self, (Request) -> Unit) -> Unit
-pub fn Page::onResponse(Self, (Response) -> Unit) -> Unit
-pub fn Page::onResponseCompleted(Self, (Response) -> Unit) -> Unit
-pub async fn Page::pdf(Self, path? : String, scale? : Double, displayHeaderFooter? : Bool, headerTemplate? : String, footerTemplate? : String, printBackground? : Bool, landscape? : Bool, pageRanges? : String, format? : String, width? : String, height? : String, margin? : Margin, preferCSSPageSize? : Bool) -> ResponseBody
-pub async fn Page::press(Self, String, String, delay? : Int, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Page::reload(Self, timeout? : Int, waitUntil? : String) -> Response?
-pub async fn Page::screenshot(Self, path? : String, type_? : String, quality? : Int, fullPage? : Bool, clip? : Clip, omitBackground? : Bool, timeout? : Int, scale? : String) -> ResponseBody
-pub async fn Page::selectOption(Self, String, Array[SelectOption], force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Array[String]
-pub async fn Page::setContent(Self, String, timeout? : Int, waitUntil? : String) -> Unit
-pub fn Page::setDefaultNavigationTimeout(Self, Int) -> Unit
-pub fn Page::setDefaultTimeout(Self, Int) -> Unit
-pub async fn Page::setExtraHTTPHeaders(Self, Headers) -> Unit
-pub async fn Page::setViewportSize(Self, Int, Int) -> Unit
+pub fn Page::on_network_event(Self, (NetworkEvent) -> Unit) -> Unit
+pub fn Page::on_request(Self, (Request) -> Unit) -> Unit
+pub fn Page::on_response(Self, (Response) -> Unit) -> Unit
+pub fn Page::on_response_completed(Self, (Response) -> Unit) -> Unit
+pub async fn Page::pdf(Self, path? : String, scale? : Double, display_header_footer? : Bool, header_template? : String, footer_template? : String, print_background? : Bool, landscape? : Bool, page_ranges? : String, format? : String, width? : String, height? : String, margin? : Margin, prefer_css_page_size? : Bool) -> ResponseBody
+pub async fn Page::press(Self, String, String, delay? : Int, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Page::reload(Self, timeout? : Int, wait_until? : String) -> Response?
+pub async fn Page::screenshot(Self, path? : String, type_? : String, quality? : Int, full_page? : Bool, clip? : Clip, omit_background? : Bool, timeout? : Int, scale? : String) -> ResponseBody
+pub async fn Page::select_option(Self, String, Array[SelectOption], force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Array[String]
+pub async fn Page::set_content(Self, String, timeout? : Int, wait_until? : String) -> Unit
+pub fn Page::set_default_navigation_timeout(Self, Int) -> Unit
+pub fn Page::set_default_timeout(Self, Int) -> Unit
+pub async fn Page::set_extra_http_headers(Self, Headers) -> Unit
+pub async fn Page::set_viewport_size(Self, Int, Int) -> Unit
 pub async fn Page::title(Self) -> String
-pub async fn Page::type_(Self, String, String, delay? : Int, noWaitAfter? : Bool, timeout? : Int) -> Unit
-pub async fn Page::uncheck(Self, String, force? : Bool, noWaitAfter? : Bool, timeout? : Int) -> Unit
+pub async fn Page::type_(Self, String, String, delay? : Int, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Page::uncheck(Self, String, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
 pub fn Page::url(Self) -> String
-pub fn Page::viewportSize(Self) -> (Int, Int)?
-pub async fn Page::waitForFunction(Self, String, arg? : Json, polling? : Int, timeout? : Int) -> Json
-pub async fn Page::waitForLoadState(Self, state? : String, timeout? : Int) -> Unit
-pub async fn Page::waitForNavigation(Self, timeout? : Int, url? : String, waitUntil? : String) -> Response?
-pub async fn Page::waitForRequest(Self, String, timeout? : Int, matchMode? : String, predicate? : (Request) -> Bool) -> Request?
-pub async fn Page::waitForResponse(Self, String, timeout? : Int, matchMode? : String, stage? : String, predicate? : (Response) -> Bool) -> Response?
-pub async fn Page::waitForSelector(Self, String, state? : String, timeout? : Int, strict? : Bool) -> ElementHandle?
-pub async fn Page::waitForTimeout(Self, Int) -> Unit
-pub async fn Page::waitForURL(Self, String, timeout? : Int, waitUntil? : String) -> Unit
+pub fn Page::viewport_size(Self) -> (Int, Int)?
+pub async fn Page::wait_for_function(Self, String, arg? : Json, polling? : Int, timeout? : Int) -> Json
+pub async fn Page::wait_for_load_state(Self, state? : String, timeout? : Int) -> Unit
+pub async fn Page::wait_for_navigation(Self, timeout? : Int, url? : String, wait_until? : String) -> Response?
+pub async fn Page::wait_for_request(Self, String, timeout? : Int, match_mode? : String, predicate? : (Request) -> Bool) -> Request?
+pub async fn Page::wait_for_response(Self, String, timeout? : Int, match_mode? : String, stage? : String, predicate? : (Response) -> Bool) -> Response?
+pub async fn Page::wait_for_selector(Self, String, state? : String, timeout? : Int, strict? : Bool) -> ElementHandle?
+pub async fn Page::wait_for_timeout(Self, Int) -> Unit
+pub async fn Page::wait_for_url(Self, String, timeout? : Int, wait_until? : String) -> Unit
 
 pub struct Request {
   url_ : String
   method_ : String
   headers_ : Headers
 }
-pub async fn Request::allHeaders(Self) -> Headers
+pub async fn Request::all_headers(Self) -> Headers
 pub fn Request::headers(Self) -> Headers
-pub fn Request::isNavigationRequest(Self) -> Bool
+pub fn Request::is_navigation_request(Self) -> Bool
 pub fn Request::method_(Self) -> String
-pub fn Request::postData(Self) -> String?
-pub fn Request::postDataJSON(Self) -> Json
-pub fn Request::resourceType(Self) -> String
+pub fn Request::post_data(Self) -> String?
+pub fn Request::post_data_json(Self) -> Json
+pub fn Request::resource_type(Self) -> String
 pub async fn Request::response(Self) -> Response?
 pub fn Request::url(Self) -> String
 pub impl Show for Request
@@ -375,17 +376,17 @@ pub struct Response {
   from_cache_ : Bool
   from_service_worker_ : Bool
 }
-pub async fn Response::allHeaders(Self) -> Headers
+pub async fn Response::all_headers(Self) -> Headers
 pub async fn Response::body(Self) -> ResponseBody
 pub fn Response::frame(Self) -> Frame
-pub fn Response::fromCache(Self) -> Bool
-pub fn Response::fromServiceWorker(Self) -> Bool
+pub fn Response::from_cache(Self) -> Bool
+pub fn Response::from_service_worker(Self) -> Bool
 pub fn Response::headers(Self) -> Headers
 pub async fn Response::json(Self) -> Json
 pub fn Response::ok(Self) -> Bool
 pub fn Response::request(Self) -> Request
 pub fn Response::status(Self) -> Int
-pub fn Response::statusText(Self) -> String
+pub fn Response::status_text(Self) -> String
 pub async fn Response::text(Self) -> String
 pub fn Response::url(Self) -> String
 pub impl Show for Response

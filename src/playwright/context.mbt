@@ -31,7 +31,7 @@ pub fn BrowserContext::close_with_error_callback(
 
 ///|
 /// Create new page in context
-pub async fn BrowserContext::newPage(self : BrowserContext) -> Page {
+pub async fn BrowserContext::new_page(self : BrowserContext) -> Page {
   let state = self.state.val
   let context_id = match
     state.browser.state.val.client.browsing_context_create(
@@ -70,7 +70,7 @@ pub fn BrowserContext::pages(self : BrowserContext) -> Array[Page] {
 
 ///|
 /// Set default navigation timeout
-pub fn BrowserContext::setDefaultNavigationTimeout(
+pub fn BrowserContext::set_default_navigation_timeout(
   self : BrowserContext,
   timeout : Int,
 ) -> Unit {
@@ -81,7 +81,7 @@ pub fn BrowserContext::setDefaultNavigationTimeout(
 
 ///|
 /// Set default timeout
-pub fn BrowserContext::setDefaultTimeout(
+pub fn BrowserContext::set_default_timeout(
   self : BrowserContext,
   timeout : Int,
 ) -> Unit {
@@ -92,7 +92,7 @@ pub fn BrowserContext::setDefaultTimeout(
 
 ///|
 /// Add cookies
-pub async fn BrowserContext::addCookies(
+pub async fn BrowserContext::add_cookies(
   self : BrowserContext,
   cookies : Array[Cookie],
 ) -> Unit {
@@ -102,7 +102,7 @@ pub async fn BrowserContext::addCookies(
 
 ///|
 /// Clear cookies
-pub async fn BrowserContext::clearCookies(self : BrowserContext) -> Unit {
+pub async fn BrowserContext::clear_cookies(self : BrowserContext) -> Unit {
   consume(self)
   async_noop()
 }
@@ -120,7 +120,7 @@ pub async fn BrowserContext::cookies(
 
 ///|
 /// Grant permissions
-pub async fn BrowserContext::grantPermissions(
+pub async fn BrowserContext::grant_permissions(
   self : BrowserContext,
   permissions : Array[String],
   origin? : String,
@@ -131,14 +131,14 @@ pub async fn BrowserContext::grantPermissions(
 
 ///|
 /// Clear permissions
-pub async fn BrowserContext::clearPermissions(self : BrowserContext) -> Unit {
+pub async fn BrowserContext::clear_permissions(self : BrowserContext) -> Unit {
   consume(self)
   async_noop()
 }
 
 ///|
 /// Set geolocation
-pub async fn BrowserContext::setGeolocation(
+pub async fn BrowserContext::set_geolocation(
   self : BrowserContext,
   latitude : Double,
   longitude : Double,
@@ -150,7 +150,7 @@ pub async fn BrowserContext::setGeolocation(
 
 ///|
 /// Set offline mode
-pub async fn BrowserContext::setOffline(
+pub async fn BrowserContext::set_offline(
   self : BrowserContext,
   offline : Bool,
 ) -> Unit {

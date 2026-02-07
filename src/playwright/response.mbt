@@ -27,7 +27,7 @@ pub fn Response::status(self : Response) -> Int {
 
 ///|
 /// Get response status text
-pub fn Response::statusText(self : Response) -> String {
+pub fn Response::status_text(self : Response) -> String {
   self.status_text_
 }
 
@@ -45,7 +45,7 @@ pub fn Response::headers(self : Response) -> Headers {
 
 ///|
 /// Get all response headers
-pub async fn Response::allHeaders(self : Response) -> Headers {
+pub async fn Response::all_headers(self : Response) -> Headers {
   consume(self)
   async_noop()
   self.headers_
@@ -89,13 +89,13 @@ pub fn Response::frame(self : Response) -> Frame {
 
 ///|
 /// Check if response was served from cache
-pub fn Response::fromCache(self : Response) -> Bool {
+pub fn Response::from_cache(self : Response) -> Bool {
   self.from_cache_
 }
 
 ///|
 /// Check if response was served from service worker
-pub fn Response::fromServiceWorker(self : Response) -> Bool {
+pub fn Response::from_service_worker(self : Response) -> Bool {
   self.from_service_worker_
 }
 
@@ -121,7 +121,7 @@ pub fn Request::headers(self : Request) -> Headers {
 
 ///|
 /// Get all request headers
-pub async fn Request::allHeaders(self : Request) -> Headers {
+pub async fn Request::all_headers(self : Request) -> Headers {
   consume(self)
   async_noop()
   self.headers_
@@ -129,28 +129,28 @@ pub async fn Request::allHeaders(self : Request) -> Headers {
 
 ///|
 /// Get request post data
-pub fn Request::postData(self : Request) -> String? {
+pub fn Request::post_data(self : Request) -> String? {
   consume(self)
   None
 }
 
 ///|
 /// Get request post data as JSON
-pub fn Request::postDataJSON(self : Request) -> Json {
+pub fn Request::post_data_json(self : Request) -> Json {
   consume(self)
   Json::null()
 }
 
 ///|
 /// Get resource type
-pub fn Request::resourceType(self : Request) -> String {
+pub fn Request::resource_type(self : Request) -> String {
   consume(self)
   ""
 }
 
 ///|
 /// Check if request is navigation request
-pub fn Request::isNavigationRequest(self : Request) -> Bool {
+pub fn Request::is_navigation_request(self : Request) -> Bool {
   consume(self)
   false
 }
@@ -195,21 +195,21 @@ pub async fn Frame::content(self : Frame) -> String {
 
 ///|
 /// Get parent frame
-pub fn Frame::parentFrame(self : Frame) -> Frame? {
+pub fn Frame::parent_frame(self : Frame) -> Frame? {
   consume(self)
   None
 }
 
 ///|
 /// Get child frames
-pub fn Frame::childFrames(self : Frame) -> Array[Frame] {
+pub fn Frame::child_frames(self : Frame) -> Array[Frame] {
   consume(self)
   []
 }
 
 ///|
 /// Check if frame is detached
-pub fn Frame::isDetached(self : Frame) -> Bool {
+pub fn Frame::is_detached(self : Frame) -> Bool {
   consume(self)
   false
 }
@@ -239,9 +239,9 @@ pub async fn Frame::goto(
   self : Frame,
   url : String,
   timeout? : Int,
-  waitUntil? : String,
+  wait_until? : String,
 ) -> Response? {
-  consume((self, timeout, waitUntil))
+  consume((self, timeout, wait_until))
   async_noop()
   Some(make_response(url))
 }

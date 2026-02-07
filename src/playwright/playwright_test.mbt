@@ -74,8 +74,8 @@ async test "chromium connect and page flow" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  assert_true(browser.isConnected())
-  let page = browser.newPage()
+  assert_true(browser.is_connected())
+  let page = browser.new_page()
   let response = page.goto("https://example.com")
   match response {
     Some(resp) => inspect(resp.url(), content="https://example.com")
@@ -122,6 +122,12 @@ async test "chromium connect and page flow" {
     test_get_string_field(params3, "expression"),
     content="Some(\"document.title\")",
   )
+}
+
+///|
+async test "connect over websocket" {
+  let browser = chromium().connect_over_websocket("ws://127.0.0.1:9")
+  inspect(browser.is_connected(), content="true")
 }
 
 ///|
@@ -180,8 +186,8 @@ async test "locator bounding box" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
-  match page.locator("div").boundingBox() {
+  let page = browser.new_page()
+  match page.locator("div").bounding_box() {
     Some(bbox) => {
       assert_eq(bbox.x, 1.0)
       assert_eq(bbox.y, 2.0)
@@ -211,7 +217,7 @@ async test "expect locator text matchers" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
+  let page = browser.new_page()
   let locator = page.locator("div")
   expect(locator).to_have_text("Hello World")
   expect(locator).to_contain_text("Hello")
@@ -219,7 +225,7 @@ async test "expect locator text matchers" {
   let req = @json.parse(sent.val[3]) catch { _ => Json::null() }
   let params = test_get_object_field(req, "params").unwrap_or(Json::object({}))
   match test_get_string_field(params, "expression") {
-    Some(expr) => assert_true(expr.contains("innerText"))
+    Some(expr) => assert_true(expr.contains("inner_text"))
     None => assert_true(false)
   }
   let req2 = @json.parse(sent.val[4]) catch { _ => Json::null() }
@@ -247,7 +253,7 @@ async test "expect locator state and page matchers" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
+  let page = browser.new_page()
   let _ = page.goto("https://example.com")
   let locator = page.locator("input")
   expect(locator).to_be_visible()
@@ -289,7 +295,7 @@ async test "expect locator class css and focused" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
+  let page = browser.new_page()
   let locator = page.locator("button")
   expect(locator).to_have_class("btn-primary active")
   expect(locator).to_have_class("btn-primary", match_mode="contains")
@@ -344,23 +350,23 @@ async test "handles and response body" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
-  let handle = page.evaluateHandle("(() => 'ok')()")
-  json_inspect(handle.jsonValue(), content=Json::string("ok"))
-  let element = page.waitForSelector("div")
+  let page = browser.new_page()
+  let handle = page.evaluate_handle("(() => 'ok')()")
+  json_inspect(handle.json_value(), content=Json::string("ok"))
+  let element = page.wait_for_selector("div")
   match element {
     Some(el) =>
-      match el.jsonValue() {
+      match el.json_value() {
         Null => assert_true(false)
         _ => assert_true(true)
       }
     None => assert_true(false)
   }
-  match JSHandle::null().asElement() {
+  match JSHandle::null().as_element() {
     Some(_) => assert_true(false)
     None => assert_true(true)
   }
-  let strict_result : Result[ElementHandle?, Error] = try? page.waitForSelector(
+  let strict_result : Result[ElementHandle?, Error] = try? page.wait_for_selector(
     "div",
     strict=true,
   )
@@ -446,7 +452,7 @@ async test "handles and response body" {
 }
 
 ///|
-async test "getByText and waitForTimeout" {
+async test "get_by_text and wait_for_timeout" {
   let sent : Ref[Array[String]] = { val: [] }
   let recv_queue : Ref[Array[String]] = {
     val: [
@@ -457,11 +463,11 @@ async test "getByText and waitForTimeout" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
-  let locator = page.getByText("Hello")
+  let page = browser.new_page()
+  let locator = page.get_by_text("Hello")
   locator.click()
   let start = @async.now()
-  page.waitForTimeout(10)
+  page.wait_for_timeout(10)
   let elapsed = @async.now() - start
   assert_true(elapsed.to_int() >= 5)
   let req2 = @json.parse(sent.val[3]) catch { _ => Json::null() }
@@ -478,7 +484,7 @@ async test "getByText and waitForTimeout" {
 }
 
 ///|
-async test "filter hasText and getByLabel" {
+async test "filter has_text and get_by_label" {
   let sent : Ref[Array[String]] = { val: [] }
   let recv_queue : Ref[Array[String]] = {
     val: [
@@ -491,11 +497,11 @@ async test "filter hasText and getByLabel" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
-  let locator = page.locator("div").filter(hasText="Hello", hasNotText="Skip")
+  let page = browser.new_page()
+  let locator = page.locator("div").filter(has_text="Hello", has_not_text="Skip")
   locator.click()
-  page.getByLabel("Name").click()
-  page.locator("section").getByLabel("Scoped").click()
+  page.get_by_label("Name").click()
+  page.locator("section").get_by_label("Scoped").click()
   let req2 = @json.parse(sent.val[3]) catch { _ => Json::null() }
   let params2 = test_get_object_field(req2, "params").unwrap_or(
     Json::object({}),
@@ -516,16 +522,16 @@ async test "filter hasText and getByLabel" {
     Some(expr) => {
       assert_true(expr.contains("querySelectorAll(\"label\")"))
       assert_true(expr.contains("const txt = \"Name\""))
-      assert_true(expr.contains("getAttribute('for')"))
+      assert_true(expr.contains("get_attribute('for')"))
       assert_true(expr.contains("aria-labelledby"))
       assert_true(expr.contains("aria-label"))
       assert_true(expr.contains("parts.join"))
       assert_true(expr.contains("label[for=\""))
       assert_true(expr.contains("labelledByText"))
       assert_true(expr.contains("accessibleName"))
-      assert_true(expr.contains("innerText"))
+      assert_true(expr.contains("inner_text"))
       assert_true(expr.contains("compareDocumentPosition"))
-      assert_true(expr.contains("isVisible"))
+      assert_true(expr.contains("is_visible"))
       assert_true(expr.contains("getClientRects"))
       assert_true(expr.contains("getBoundingClientRect"))
       assert_true(expr.contains("aria-hidden"))
@@ -561,9 +567,9 @@ async test "filter hasText and getByLabel" {
       assert_true(expr.contains("label[for=\""))
       assert_true(expr.contains("labelledByText"))
       assert_true(expr.contains("accessibleName"))
-      assert_true(expr.contains("innerText"))
+      assert_true(expr.contains("inner_text"))
       assert_true(expr.contains("compareDocumentPosition"))
-      assert_true(expr.contains("isVisible"))
+      assert_true(expr.contains("is_visible"))
       assert_true(expr.contains("getClientRects"))
       assert_true(expr.contains("getBoundingClientRect"))
       assert_true(expr.contains("aria-hidden"))
@@ -594,8 +600,8 @@ async test "navigation wait and network events" {
       "{\"id\":1,\"type\":\"success\",\"result\":{\"sessionId\":\"sid-1\",\"capabilities\":{}}}",
       "{\"id\":2,\"type\":\"success\",\"result\":{}}", "{\"id\":3,\"type\":\"success\",\"result\":{\"context\":\"ctx-1\"}}",
       "{\"type\":\"event\",\"method\":\"network.beforeRequestSent\",\"params\":{\"context\":\"ctx-1\",\"request\":{\"url\":\"https://example.com/request\",\"method\":\"GET\",\"headers\":[{\"name\":\"accept\",\"value\":\"text/html\"}]}}}",
-      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":200,\"statusText\":\"OK\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/html\"}]}}}",
-      "{\"type\":\"event\",\"method\":\"network.responseCompleted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":200,\"statusText\":\"OK\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/html\"}]}}}",
+      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":200,\"status_text\":\"OK\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/html\"}]}}}",
+      "{\"type\":\"event\",\"method\":\"network.responseCompleted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":200,\"status_text\":\"OK\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/html\"}]}}}",
       "{\"type\":\"event\",\"method\":\"browsingContext.domContentLoaded\",\"params\":{\"context\":\"ctx-1\",\"url\":\"https://example.com/final\"}}",
       "{\"type\":\"event\",\"method\":\"browsingContext.load\",\"params\":{\"context\":\"ctx-1\",\"url\":\"https://example.com/final\"}}",
       "{\"id\":4,\"type\":\"success\",\"result\":{\"navigation\":\"nav-1\",\"url\":\"https://example.com/start\"}}",
@@ -604,18 +610,18 @@ async test "navigation wait and network events" {
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
+  let page = browser.new_page()
   let requests : Ref[Array[String]] = { val: [] }
   let responses : Ref[Array[Int]] = { val: [] }
   let completed : Ref[Array[Int]] = { val: [] }
-  page.onRequest(fn(req : Request) { requests.val.push(req.url()) })
-  page.onResponse(fn(resp : Response) { responses.val.push(resp.status()) })
-  page.onResponseCompleted(fn(resp : Response) {
+  page.on_request(fn(req : Request) { requests.val.push(req.url()) })
+  page.on_response(fn(resp : Response) { responses.val.push(resp.status()) })
+  page.on_response_completed(fn(resp : Response) {
     completed.val.push(resp.status())
   })
   let _ = page.goto("https://example.com/start")
-  page.waitForLoadState(state="domcontentloaded")
-  let nav = page.waitForNavigation(waitUntil="load")
+  page.wait_for_load_state(state="domcontentloaded")
+  let nav = page.wait_for_navigation(wait_until="load")
   match nav {
     Some(resp) => inspect(resp.url(), content="https://example.com/final")
     None => assert_true(false)
@@ -630,27 +636,27 @@ async test "navigation wait and network events" {
 }
 
 ///|
-async test "waitForRequest and waitForResponse" {
+async test "wait_for_request and wait_for_response" {
   let sent : Ref[Array[String]] = { val: [] }
   let recv_queue : Ref[Array[String]] = {
     val: [
       "{\"id\":1,\"type\":\"success\",\"result\":{\"sessionId\":\"sid-1\",\"capabilities\":{}}}",
       "{\"id\":2,\"type\":\"success\",\"result\":{}}", "{\"id\":3,\"type\":\"success\",\"result\":{\"context\":\"ctx-1\"}}",
       "{\"type\":\"event\",\"method\":\"network.beforeRequestSent\",\"params\":{\"context\":\"ctx-1\",\"request\":{\"url\":\"https://example.com/request\",\"method\":\"GET\",\"headers\":[{\"name\":\"accept\",\"value\":\"text/html\"}]}}}",
-      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":200,\"statusText\":\"OK\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/html\"}]}}}",
-      "{\"type\":\"event\",\"method\":\"network.responseCompleted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":204,\"statusText\":\"No Content\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/plain\"}]}}}",
+      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":200,\"status_text\":\"OK\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/html\"}]}}}",
+      "{\"type\":\"event\",\"method\":\"network.responseCompleted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/final\",\"status\":204,\"status_text\":\"No Content\",\"headers\":[{\"name\":\"content-type\",\"value\":\"text/plain\"}]}}}",
       "{\"id\":4,\"type\":\"success\",\"result\":{\"navigation\":\"nav-1\",\"url\":\"https://example.com/start\"}}",
     ],
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
+  let page = browser.new_page()
   let _ = page.goto("https://example.com/start")
-  match page.waitForRequest("https://example.com/request") {
+  match page.wait_for_request("https://example.com/request") {
     Some(req) => inspect(req.url(), content="https://example.com/request")
     None => assert_true(false)
   }
-  match page.waitForResponse("https://example.com/final") {
+  match page.wait_for_response("https://example.com/final") {
     Some(resp) => {
       inspect(resp.url(), content="https://example.com/final")
       assert_eq(resp.status(), 200)
@@ -658,7 +664,7 @@ async test "waitForRequest and waitForResponse" {
     None => assert_true(false)
   }
   match
-    page.waitForResponse("https://example.com/final", stage="completed", predicate=fn(
+    page.wait_for_response("https://example.com/final", stage="completed", predicate=fn(
       resp : Response,
     ) {
       resp.status() == 204
@@ -669,7 +675,7 @@ async test "waitForRequest and waitForResponse" {
 }
 
 ///|
-async test "waitForRequest match modes" {
+async test "wait_for_request match modes" {
   let sent : Ref[Array[String]] = { val: [] }
   let recv_queue : Ref[Array[String]] = {
     val: [
@@ -679,21 +685,21 @@ async test "waitForRequest match modes" {
       "{\"type\":\"event\",\"method\":\"network.beforeRequestSent\",\"params\":{\"context\":\"ctx-1\",\"request\":{\"url\":\"https://example.com/api/v1/save\",\"method\":\"POST\",\"headers\":[]}}}",
       "{\"type\":\"event\",\"method\":\"network.beforeRequestSent\",\"params\":{\"context\":\"ctx-1\",\"request\":{\"url\":\"https://example.com/assets/app.js\",\"method\":\"GET\",\"headers\":[]}}}",
       "{\"type\":\"event\",\"method\":\"network.beforeRequestSent\",\"params\":{\"context\":\"ctx-1\",\"request\":{\"url\":\"https://example.com/api/v2/items\",\"method\":\"GET\",\"headers\":[]}}}",
-      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/api/v1/items\",\"status\":200,\"statusText\":\"OK\",\"headers\":[]}}}",
-      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/assets/app.js\",\"status\":200,\"statusText\":\"OK\",\"headers\":[]}}}",
+      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/api/v1/items\",\"status\":200,\"status_text\":\"OK\",\"headers\":[]}}}",
+      "{\"type\":\"event\",\"method\":\"network.responseStarted\",\"params\":{\"context\":\"ctx-1\",\"response\":{\"url\":\"https://example.com/assets/app.js\",\"status\":200,\"status_text\":\"OK\",\"headers\":[]}}}",
       "{\"id\":4,\"type\":\"success\",\"result\":{\"navigation\":\"nav-1\",\"url\":\"https://example.com/start\"}}",
     ],
   }
   let transport = make_mock_transport(sent, recv_queue)
   let browser = chromium().connect_with_transport(transport)
-  let page = browser.newPage()
+  let page = browser.new_page()
   let _ = page.goto("https://example.com/start")
-  match page.waitForRequest("example.com/api", matchMode="contains") {
+  match page.wait_for_request("example.com/api", match_mode="contains") {
     Some(req) => inspect(req.url(), content="https://example.com/api/v1/items")
     None => assert_true(false)
   }
   match
-    page.waitForRequest("https://example.com/api/v1/*", predicate=fn(
+    page.wait_for_request("https://example.com/api/v1/*", predicate=fn(
       req : Request,
     ) {
       req.method_() == "POST"
@@ -701,16 +707,16 @@ async test "waitForRequest match modes" {
     Some(req) => inspect(req.url(), content="https://example.com/api/v1/save")
     None => assert_true(false)
   }
-  match page.waitForRequest("https://example.com/*") {
+  match page.wait_for_request("https://example.com/*") {
     Some(req) => inspect(req.url(), content="https://example.com/assets/app.js")
     None => assert_true(false)
   }
   match
-    page.waitForRequest("^https://example.com/api/.*items$", matchMode="regex") {
+    page.wait_for_request("^https://example.com/api/.*items$", match_mode="regex") {
     Some(req) => inspect(req.url(), content="https://example.com/api/v2/items")
     None => assert_true(false)
   }
-  match page.waitForResponse("assets/app.js", matchMode="contains") {
+  match page.wait_for_response("assets/app.js", match_mode="contains") {
     Some(resp) =>
       inspect(resp.url(), content="https://example.com/assets/app.js")
     None => assert_true(false)

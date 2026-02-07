@@ -40,21 +40,21 @@ pub fn JSHandle::raw(self : JSHandle) -> Json {
 }
 
 ///|
-pub fn JSHandle::jsonValue(self : JSHandle) -> Json {
+pub fn JSHandle::json_value(self : JSHandle) -> Json {
   remote_value_to_json(self.state.val.value)
 }
 
 ///|
-pub fn JSHandle::isNull(self : JSHandle) -> Bool {
-  match self.jsonValue() {
+pub fn JSHandle::is_null(self : JSHandle) -> Bool {
+  match self.json_value() {
     Null => true
     _ => false
   }
 }
 
 ///|
-pub fn JSHandle::asElement(self : JSHandle) -> ElementHandle? {
-  if self.isNull() {
+pub fn JSHandle::as_element(self : JSHandle) -> ElementHandle? {
+  if self.is_null() {
     None
   } else {
     Some(ElementHandle::from_handle(self))
@@ -70,7 +70,7 @@ pub async fn JSHandle::dispose(self : JSHandle) -> Unit {
 ///|
 pub async fn JSHandle::evaluate(
   self : JSHandle,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
 ) -> Json {
   let state = self.state.val
@@ -83,7 +83,7 @@ pub async fn JSHandle::evaluate(
     None => ()
   }
   let result = state.client.script_call_function(
-    pageFunction,
+    page_function,
     state.context_id,
     arguments=args,
   )
@@ -98,9 +98,9 @@ pub async fn JSHandle::evaluate(
 }
 
 ///|
-pub async fn JSHandle::evaluateHandle(
+pub async fn JSHandle::evaluate_handle(
   self : JSHandle,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
 ) -> JSHandle {
   let state = self.state.val
@@ -113,7 +113,7 @@ pub async fn JSHandle::evaluateHandle(
     None => ()
   }
   let result = state.client.script_call_function(
-    pageFunction,
+    page_function,
     state.context_id,
     arguments=args,
   )
@@ -135,13 +135,13 @@ pub fn ElementHandle::from_handle(handle : JSHandle) -> ElementHandle {
 }
 
 ///|
-pub fn ElementHandle::asJSHandle(self : ElementHandle) -> JSHandle {
+pub fn ElementHandle::as_js_handle(self : ElementHandle) -> JSHandle {
   self.handle
 }
 
 ///|
-pub fn ElementHandle::jsonValue(self : ElementHandle) -> Json {
-  self.handle.jsonValue()
+pub fn ElementHandle::json_value(self : ElementHandle) -> Json {
+  self.handle.json_value()
 }
 
 ///|
@@ -152,24 +152,24 @@ pub async fn ElementHandle::dispose(self : ElementHandle) -> Unit {
 ///|
 pub async fn ElementHandle::evaluate(
   self : ElementHandle,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
 ) -> Json {
   match arg {
-    Some(value) => self.handle.evaluate(pageFunction, arg=value)
-    None => self.handle.evaluate(pageFunction)
+    Some(value) => self.handle.evaluate(page_function, arg=value)
+    None => self.handle.evaluate(page_function)
   }
 }
 
 ///|
-pub async fn ElementHandle::evaluateHandle(
+pub async fn ElementHandle::evaluate_handle(
   self : ElementHandle,
-  pageFunction : String,
+  page_function : String,
   arg? : Json,
 ) -> JSHandle {
   match arg {
-    Some(value) => self.handle.evaluateHandle(pageFunction, arg=value)
-    None => self.handle.evaluateHandle(pageFunction)
+    Some(value) => self.handle.evaluate_handle(page_function, arg=value)
+    None => self.handle.evaluate_handle(page_function)
   }
 }
 

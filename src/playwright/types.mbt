@@ -84,9 +84,9 @@ pub struct Cookie {
   domain : String?
   path : String?
   expires : Double?
-  httpOnly : Bool?
+  http_only : Bool?
   secure : Bool?
-  sameSite : String?
+  same_site : String?
 } derive(Show, Eq)
 
 ///|
@@ -191,9 +191,9 @@ pub fn Cookie::from_json(json : Json) -> Cookie? {
         domain: json_get_string(json, "domain"),
         path: json_get_string(json, "path"),
         expires: json_get_number(json, "expires"),
-        httpOnly: json_get_bool(json, "httpOnly"),
+        http_only: json_get_bool(json, "http_only"),
         secure: json_get_bool(json, "secure"),
-        sameSite: json_get_string(json, "sameSite"),
+        same_site: json_get_string(json, "same_site"),
       })
     _ => None
   }
@@ -207,11 +207,11 @@ pub fn Cookie::new(
   domain? : String,
   path? : String,
   expires? : Double,
-  httpOnly? : Bool,
+  http_only? : Bool,
   secure? : Bool,
-  sameSite? : String,
+  same_site? : String,
 ) -> Cookie {
-  { name, value, url, domain, path, expires, httpOnly, secure, sameSite }
+  { name, value, url, domain, path, expires, http_only, secure, same_site }
 }
 
 ///|
@@ -235,16 +235,16 @@ pub fn Cookie::to_json(self : Cookie) -> Json {
     Some(value) => map.set("expires", Json::number(value))
     None => ()
   }
-  match self.httpOnly {
-    Some(value) => map.set("httpOnly", Json::boolean(value))
+  match self.http_only {
+    Some(value) => map.set("http_only", Json::boolean(value))
     None => ()
   }
   match self.secure {
     Some(value) => map.set("secure", Json::boolean(value))
     None => ()
   }
-  match self.sameSite {
-    Some(value) => map.set("sameSite", Json::string(value))
+  match self.same_site {
+    Some(value) => map.set("same_site", Json::string(value))
     None => ()
   }
   Json::object(map)

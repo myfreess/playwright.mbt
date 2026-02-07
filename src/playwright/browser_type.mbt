@@ -37,6 +37,14 @@ pub async fn BrowserType::connect(
 }
 
 ///|
+pub async fn BrowserType::connect_over_websocket(
+  self : BrowserType,
+  ws_endpoint : String,
+) -> Browser {
+  self.connect(ws_endpoint)
+}
+
+///|
 pub async fn BrowserType::connect_with_transport(
   self : BrowserType,
   transport : @bidi.Transport,
@@ -72,28 +80,28 @@ pub async fn BrowserType::launch(
   headless? : Bool,
   args? : Array[String],
   channel? : String,
-  chromiumSandbox? : Bool,
+  chromium_sandbox? : Bool,
   devtools? : Bool,
-  downloadsPath? : String,
-  executablePath? : String,
-  handleSIGHUP? : Bool,
-  handleSIGINT? : Bool,
-  handleSIGTERM? : Bool,
-  slowMo? : Int,
+  downloads_path? : String,
+  executable_path? : String,
+  handle_sighup? : Bool,
+  handle_sigint? : Bool,
+  handle_sigterm? : Bool,
+  slow_mo? : Int,
   timeout? : Int,
 ) -> Browser {
   let _ = headless
   let _ = args
   let _ = channel
-  let _ = chromiumSandbox
+  let _ = chromium_sandbox
   let _ = devtools
-  let _ = downloadsPath
-  let _ = handleSIGHUP
-  let _ = handleSIGINT
-  let _ = handleSIGTERM
-  let _ = slowMo
+  let _ = downloads_path
+  let _ = handle_sighup
+  let _ = handle_sigint
+  let _ = handle_sigterm
+  let _ = slow_mo
   let _ = timeout
-  let endpoint = match executablePath {
+  let endpoint = match executable_path {
     Some(path) =>
       if path.has_prefix("ws://") || path.has_prefix("wss://") {
         path
@@ -107,21 +115,21 @@ pub async fn BrowserType::launch(
 
 ///|
 /// Launch persistent context (saves user data)
-pub async fn BrowserType::launchPersistentContext(
+pub async fn BrowserType::launch_persistent_context(
   self : BrowserType,
-  userDataDir : String,
+  user_data_dir : String,
   headless? : Bool,
   args? : Array[String],
   channel? : String,
-  slowMo? : Int,
+  slow_mo? : Int,
   timeout? : Int,
 ) -> BrowserContext {
-  let _ = userDataDir
+  let _ = user_data_dir
   let _ = headless
   let _ = args
   let _ = channel
-  let _ = slowMo
+  let _ = slow_mo
   let _ = timeout
   let browser = self.launch()
-  browser.newContext()
+  browser.new_context()
 }

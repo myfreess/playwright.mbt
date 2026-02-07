@@ -169,7 +169,7 @@ fn request_from_json(json : Json) -> Request? {
 fn response_from_json(json : Json) -> Response? {
   let url = event_get_string(json, "url")
   let status = event_get_number(json, "status")
-  let status_text = event_get_string(json, "statusText")
+  let status_text = event_get_string(json, "status_text")
   match (url, status) {
     (Some(u), Some(code)) => {
       let headers = match event_get_array(json, "headers") {
