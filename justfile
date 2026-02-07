@@ -14,17 +14,21 @@ fmt:
 check:
     moon check --deny-warn --target {{target}}
 
+# Type check (native)
+check-native:
+    moon check --deny-warn --target native
+
 # Run tests
 test:
     moon test --target {{target}}
 
+# Run tests (native)
+test-native:
+    moon test --target native
+
 # Update snapshot tests
 test-update:
     moon test --update --target {{target}}
-
-# Run main
-run:
-    moon run src/main --target {{target}}
 
 # Generate type definition files
 info:
