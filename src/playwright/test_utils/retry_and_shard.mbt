@@ -1,18 +1,57 @@
 ///|
-fn normalize_retry_times(times : Int) -> Int {
-  if times <= 1 {
-    1
-  } else {
-    times
-  }
-}
-
-///|
 fn normalize_timeout_ms(timeout : Int?, fallback : Int) -> Int {
   match timeout {
     Some(value) => if value <= 0 { 1 } else { value }
     None => fallback
   }
+}
+
+///|
+fn resolve_retry_times(times : Int?) -> Int {
+  match times {
+    Some(value) => clamp_retry_times(value)
+    None => current_test_config().retry_times
+  }
+}
+
+///|
+fn resolve_timeout_ms(ms : Int?) -> Int {
+  normalize_timeout_ms(ms, current_test_config().timeout_ms)
+}
+
+///|
+fn resolve_expect_timeout_ms(timeout : Int?) -> Int {
+  normalize_timeout_ms(timeout, current_test_config().expect_timeout_ms)
+}
+
+///|
+fn resolve_expect_interval_ms(interval : Int?) -> Int {
+  normalize_timeout_ms(interval, current_test_config().expect_interval_ms)
+}
+
+///|
+fn resolve_slow_timeout_ms(timeout_ms : Int?) -> Int {
+  normalize_timeout_ms(timeout_ms, current_test_config().slow_timeout_ms)
+}
+
+///|
+fn resolve_shard_total(shard_total : Int?) -> Int {
+  let configured = current_test_config().shard_total
+  let raw = match shard_total {
+    Some(value) => value
+    None => configured
+  }
+  normalize_shard_total(raw)
+}
+
+///|
+fn resolve_shard_index(shard_index : Int?, shard_total : Int) -> Int {
+  let configured = current_test_config().shard_index
+  let raw = match shard_index {
+    Some(value) => value
+    None => configured
+  }
+  normalize_shard_index(raw, shard_total)
 }
 
 ///|
@@ -34,8 +73,8 @@ async fn sleep_ms(ms : Int) -> Unit {
 }
 
 ///|
-pub async fn[T] retry(times~ : Int, run : async () -> T) -> T {
-  let max_attempts = normalize_retry_times(times)
+pub async fn[T] retry(times? : Int, run : async () -> T) -> T {
+  let max_attempts = resolve_retry_times(times)
   for attempt = 1 {
     let result : Result[T, Error] = try? run()
     match result {
@@ -51,8 +90,8 @@ pub async fn[T] retry(times~ : Int, run : async () -> T) -> T {
 }
 
 ///|
-pub async fn[T] timeout(ms~ : Int, run : async () -> T) -> T {
-  let timeout_ms = if ms <= 0 { 1 } else { ms }
+pub async fn[T] timeout(ms? : Int, run : async () -> T) -> T {
+  let timeout_ms = resolve_timeout_ms(ms)
   @async.with_timeout(timeout_ms, run)
 }
 
@@ -62,8 +101,8 @@ pub async fn to_pass(
   timeout? : Int,
   interval? : Int,
 ) -> Unit {
-  let timeout_ms = normalize_timeout_ms(timeout, 5_000)
-  let interval_ms = normalize_timeout_ms(interval, 50)
+  let timeout_ms = resolve_expect_timeout_ms(timeout)
+  let interval_ms = resolve_expect_interval_ms(interval)
   let start = @async.now()
   for attempt = 0 {
     let result : Result[Unit, Error] = try? run()
@@ -89,7 +128,7 @@ pub async fn to_pass(
 
 ///|
 pub async fn[T] slow(run : async () -> T, timeout_ms? : Int) -> T {
-  let limit_ms = normalize_timeout_ms(timeout_ms, 30_000)
+  let limit_ms = resolve_slow_timeout_ms(timeout_ms)
   timeout(ms=limit_ms, run)
 }
 
@@ -190,31 +229,11 @@ pub async fn fixme_async(
 }
 
 ///|
-fn normalize_shard_total(shard_total : Int) -> Int {
-  if shard_total <= 1 {
-    1
-  } else {
-    shard_total
-  }
-}
-
-///|
-fn normalize_shard_index(shard_index : Int, shard_total : Int) -> Int {
-  if shard_index <= 1 {
-    1
-  } else if shard_index > shard_total {
-    shard_total
-  } else {
-    shard_index
-  }
-}
-
-///|
 pub fn in_shard(
   item_index~ : Int,
   item_total~ : Int,
-  shard_index~ : Int,
-  shard_total~ : Int,
+  shard_index? : Int,
+  shard_total? : Int,
 ) -> Bool {
   if item_total <= 0 {
     return false
@@ -222,8 +241,8 @@ pub fn in_shard(
   if item_index < 0 || item_index >= item_total {
     return false
   }
-  let total = normalize_shard_total(shard_total)
-  let index = normalize_shard_index(shard_index, total)
+  let total = resolve_shard_total(shard_total)
+  let index = resolve_shard_index(shard_index, total)
   let start = (index - 1) * item_total / total
   let end = index * item_total / total
   item_index >= start && item_index < end
@@ -233,11 +252,11 @@ pub fn in_shard(
 pub fn shard(
   item_index~ : Int,
   item_total~ : Int,
-  shard_index~ : Int,
-  shard_total~ : Int,
+  shard_index? : Int,
+  shard_total? : Int,
   run : () -> Unit,
 ) -> Unit {
-  if in_shard(item_index~, item_total~, shard_index~, shard_total~) {
+  if in_shard(item_index~, item_total~, shard_index?, shard_total?) {
     run()
   }
 }
@@ -246,11 +265,11 @@ pub fn shard(
 pub async fn shard_async(
   item_index~ : Int,
   item_total~ : Int,
-  shard_index~ : Int,
-  shard_total~ : Int,
+  shard_index? : Int,
+  shard_total? : Int,
   run : async () -> Unit,
 ) -> Unit {
-  if in_shard(item_index~, item_total~, shard_index~, shard_total~) {
+  if in_shard(item_index~, item_total~, shard_index?, shard_total?) {
     run()
   }
 }

@@ -95,6 +95,20 @@ async test "to_pass retries until assertion succeeds" {
 }
 
 ///|
+async test "to_pass fails when timeout is reached" {
+  let attempts : Ref[Int] = { val: 0 }
+  let result = try? to_pass(timeout=10, interval=1, async fn() {
+    attempts.val = attempts.val + 1
+    assert_eq(true, false, msg="always fail")
+  })
+  match result {
+    Ok(_) => assert_eq(true, false, msg="to_pass should fail")
+    Err(_) => ()
+  }
+  assert_true(attempts.val >= 1)
+}
+
+///|
 async test "slow runs async block with extended timeout wrapper" {
   let value = slow(async fn() -> Int { 10 })
   assert_eq(value, 10)
@@ -153,4 +167,49 @@ async test "fail_async and fixme_async expect failures" {
       assert_eq(true, false, msg="fail_async should fail when block succeeds")
     Err(_) => ()
   }
+}
+
+///|
+async test "config setup controls helper defaults" {
+  reset_test_config()
+  configure_test(
+    retry_times=3,
+    timeout_ms=30,
+    expect_timeout_ms=40,
+    expect_interval_ms=1,
+    slow_timeout_ms=50,
+    shard_index=2,
+    shard_total=2,
+  )
+  let attempts : Ref[Int] = { val: 0 }
+  let value = retry(async fn() -> Int {
+    attempts.val = attempts.val + 1
+    if attempts.val < 3 {
+      assert_eq(true, false, msg="retry from config")
+    }
+    attempts.val
+  })
+  assert_eq(value, 3)
+  let timeout_value = timeout(async fn() -> Int { 7 })
+  assert_eq(timeout_value, 7)
+  let hit : Ref[Int] = { val: 0 }
+  shard(item_index=0, item_total=2, fn() { hit.val = hit.val + 1 })
+  shard(item_index=1, item_total=2, fn() { hit.val = hit.val + 1 })
+  assert_eq(hit.val, 1)
+  let should_fail = try? to_pass(async fn() {
+    assert_eq(true, false, msg="timeout from config")
+  })
+  match should_fail {
+    Ok(_) => assert_eq(true, false, msg="to_pass should fail from config")
+    Err(_) => ()
+  }
+  let config = current_test_config()
+  assert_eq(config.retry_times, 3)
+  assert_eq(config.timeout_ms, 30)
+  assert_eq(config.expect_timeout_ms, 40)
+  assert_eq(config.expect_interval_ms, 1)
+  assert_eq(config.slow_timeout_ms, 50)
+  assert_eq(config.shard_index, 2)
+  assert_eq(config.shard_total, 2)
+  reset_test_config()
 }

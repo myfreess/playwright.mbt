@@ -1,0 +1,11 @@
+{
+  "name": "playwright-mbt-integration",
+  "private": true,
+  "type": "commonjs",
+  "scripts": {
+    "test": "playwright test -c ./playwright.config.js"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.52.0"
+  }
+}

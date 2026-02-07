@@ -5,3 +5,5 @@ target
 .mooncakes/
 .moonagent/
 .jj/
+test/integration/node_modules/
+test/integration/test-results/

@@ -3,9 +3,16 @@ package "mizchi/playwright/test"
 
 import {
   "mizchi/playwright",
+  "mizchi/playwright/test_utils",
 }
 
 // Values
+pub fn configure_test(retry_times? : Int, timeout_ms? : Int, expect_timeout_ms? : Int, expect_interval_ms? : Int, slow_timeout_ms? : Int, shard_index? : Int, shard_total? : Int) -> Unit
+
+pub fn current_test_config() -> @test_utils.TestConfig
+
+pub fn default_test_config() -> @test_utils.TestConfig
+
 pub fn[T] expect(T) -> @playwright.Expect[T]
 
 pub fn[T] expect_poll(async () -> T, timeout? : Int, interval? : Int) -> PollExpect[T]
@@ -22,15 +29,19 @@ pub fn fixme(() -> Unit raise, msg? : String, loc~ : SourceLoc) -> Unit raise
 #callsite(autofill(loc))
 pub async fn fixme_async(async () -> Unit, msg? : String, loc~ : SourceLoc) -> Unit
 
-pub fn in_shard(item_index~ : Int, item_total~ : Int, shard_index~ : Int, shard_total~ : Int) -> Bool
+pub fn in_shard(item_index~ : Int, item_total~ : Int, shard_index? : Int, shard_total? : Int) -> Bool
 
 pub fn[T] poll(async () -> T, timeout? : Int, interval? : Int) -> PollExpect[T]
 
-pub async fn[T] retry(times~ : Int, async () -> T) -> T
+pub fn reset_test_config() -> Unit
 
-pub fn shard(item_index~ : Int, item_total~ : Int, shard_index~ : Int, shard_total~ : Int, () -> Unit) -> Unit
+pub async fn[T] retry(times? : Int, async () -> T) -> T
 
-pub async fn shard_async(item_index~ : Int, item_total~ : Int, shard_index~ : Int, shard_total~ : Int, async () -> Unit) -> Unit
+pub fn set_test_config(@test_utils.TestConfig) -> Unit
+
+pub fn shard(item_index~ : Int, item_total~ : Int, shard_index? : Int, shard_total? : Int, () -> Unit) -> Unit
+
+pub async fn shard_async(item_index~ : Int, item_total~ : Int, shard_index? : Int, shard_total? : Int, async () -> Unit) -> Unit
 
 pub fn skip(() -> Unit) -> Unit
 
@@ -46,9 +57,13 @@ pub fn[T] step(String, () -> T) -> T
 
 pub async fn[T] step_async(String, async () -> T) -> T
 
-pub async fn[T] timeout(ms~ : Int, async () -> T) -> T
+pub async fn[T] timeout(ms? : Int, async () -> T) -> T
 
 pub async fn to_pass(async () -> Unit, timeout? : Int, interval? : Int) -> Unit
+
+pub fn[T] with_test_config(@test_utils.TestConfig, () -> T raise) -> T raise
+
+pub async fn[T] with_test_config_async(@test_utils.TestConfig, async () -> T) -> T
 
 // Errors
 

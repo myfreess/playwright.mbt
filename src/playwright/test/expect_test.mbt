@@ -141,6 +141,32 @@ async test "fail_async and fixme_async helpers in playwright/test" {
 }
 
 ///|
+async test "config setup is available in playwright/test" {
+  reset_test_config()
+  configure_test(
+    retry_times=2,
+    expect_timeout_ms=20,
+    expect_interval_ms=1,
+    shard_index=2,
+    shard_total=2,
+  )
+  let attempts : Ref[Int] = { val: 0 }
+  let value = retry(async fn() -> Int {
+    attempts.val = attempts.val + 1
+    if attempts.val < 2 {
+      assert_eq(true, false, msg="retry from config in test package")
+    }
+    attempts.val
+  })
+  assert_eq(value, 2)
+  let hit : Ref[Int] = { val: 0 }
+  shard(item_index=0, item_total=2, fn() { hit.val = hit.val + 1 })
+  shard(item_index=1, item_total=2, fn() { hit.val = hit.val + 1 })
+  assert_eq(hit.val, 1)
+  reset_test_config()
+}
+
+///|
 async test "expect_poll retries and matcher methods" {
   let attempts_int : Ref[Int] = { val: 0 }
   expect_poll(
@@ -177,4 +203,17 @@ async test "expect_poll retries and matcher methods" {
     timeout=100,
     interval=1,
   ).to_match("ok-\\d+")
+}
+
+///|
+async test "expect_poll fails when timeout is reached" {
+  let result = try? expect_poll(
+    async fn() -> String { "pending" },
+    timeout=10,
+    interval=1,
+  ).to_match("done")
+  match result {
+    Ok(_) => assert_eq(true, false, msg="expect_poll should fail")
+    Err(_) => ()
+  }
 }

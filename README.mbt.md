@@ -24,19 +24,27 @@ let chromium = @pw.chromium()
 let _ = @pwt.expect(chromium.name()).to_equal("chromium")
 
 async test "dsl helpers" {
+  @pwt.configure_test(
+    retry_times=3,
+    timeout_ms=3_000,
+    expect_timeout_ms=800,
+    expect_interval_ms=10,
+    shard_index=1,
+    shard_total=2,
+  )
+
   let _ = @pwt.step("open", fn() -> Int { 1 })
 
-  // shard(2/2) だけ実行
-  @pwt.shard(item_index=0, item_total=2, shard_index=1, shard_total=2, fn() {})
+  // shard は設定値を省略可能
+  @pwt.shard(item_index=0, item_total=2, fn() {})
 
-  // 失敗時に最大 3 回再実行
-  let _ = @pwt.retry(times=3, async fn() -> Int { 1 })
+  // retry / timeout は設定値をデフォルトとして使える
+  let _ = @pwt.retry(async fn() -> Int { 1 })
 
-  // 1 秒以内に終わることを要求
-  let _ = @pwt.timeout(ms=1_000, async fn() -> Int { 1 })
+  let _ = @pwt.timeout(async fn() -> Int { 1 })
 
   // 一定時間リトライしながら assertion
-  @pwt.to_pass(timeout=1_000, interval=10, async fn() {
+  @pwt.to_pass(async fn() {
     @pwt.expect("ok").to_equal("ok")
   })
 

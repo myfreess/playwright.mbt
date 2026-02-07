@@ -1,0 +1,25 @@
+{
+  "is-main": true,
+  "import": [
+    {
+      "path": "mizchi/playwright/test_utils",
+      "alias": "test_utils"
+    },
+    {
+      "path": "moonbitlang/core/abort",
+      "alias": "abort"
+    },
+    {
+      "path": "moonbitlang/core/env",
+      "alias": "env"
+    },
+    {
+      "path": "moonbitlang/core/strconv",
+      "alias": "strconv"
+    },
+    {
+      "path": "moonbitlang/async",
+      "alias": "async"
+    }
+  ]
+}

@@ -1,11 +1,68 @@
 ///|
-pub async fn[T] retry(times~ : Int, run : async () -> T) -> T {
-  @test_utils.retry(times~, run)
+pub fn default_test_config() -> @test_utils.TestConfig {
+  @test_utils.default_test_config()
 }
 
 ///|
-pub async fn[T] timeout(ms~ : Int, run : async () -> T) -> T {
-  @test_utils.timeout(ms~, run)
+pub fn current_test_config() -> @test_utils.TestConfig {
+  @test_utils.current_test_config()
+}
+
+///|
+pub fn set_test_config(config : @test_utils.TestConfig) -> Unit {
+  @test_utils.set_test_config(config)
+}
+
+///|
+pub fn reset_test_config() -> Unit {
+  @test_utils.reset_test_config()
+}
+
+///|
+pub fn configure_test(
+  retry_times? : Int,
+  timeout_ms? : Int,
+  expect_timeout_ms? : Int,
+  expect_interval_ms? : Int,
+  slow_timeout_ms? : Int,
+  shard_index? : Int,
+  shard_total? : Int,
+) -> Unit {
+  @test_utils.configure_test(
+    retry_times?,
+    timeout_ms?,
+    expect_timeout_ms?,
+    expect_interval_ms?,
+    slow_timeout_ms?,
+    shard_index?,
+    shard_total?,
+  )
+}
+
+///|
+pub fn[T] with_test_config(
+  config : @test_utils.TestConfig,
+  run : () -> T raise,
+) -> T raise {
+  @test_utils.with_test_config(config, run)
+}
+
+///|
+pub async fn[T] with_test_config_async(
+  config : @test_utils.TestConfig,
+  run : async () -> T,
+) -> T {
+  @test_utils.with_test_config_async(config, run)
+}
+
+///|
+pub async fn[T] retry(times? : Int, run : async () -> T) -> T {
+  @test_utils.retry(times?, run)
+}
+
+///|
+pub async fn[T] timeout(ms? : Int, run : async () -> T) -> T {
+  @test_utils.timeout(ms?, run)
 }
 
 ///|
@@ -96,36 +153,36 @@ pub async fn fixme_async(
 pub fn in_shard(
   item_index~ : Int,
   item_total~ : Int,
-  shard_index~ : Int,
-  shard_total~ : Int,
+  shard_index? : Int,
+  shard_total? : Int,
 ) -> Bool {
-  @test_utils.in_shard(item_index~, item_total~, shard_index~, shard_total~)
+  @test_utils.in_shard(item_index~, item_total~, shard_index?, shard_total?)
 }
 
 ///|
 pub fn shard(
   item_index~ : Int,
   item_total~ : Int,
-  shard_index~ : Int,
-  shard_total~ : Int,
+  shard_index? : Int,
+  shard_total? : Int,
   run : () -> Unit,
 ) -> Unit {
-  @test_utils.shard(item_index~, item_total~, shard_index~, shard_total~, run)
+  @test_utils.shard(item_index~, item_total~, shard_index?, shard_total?, run)
 }
 
 ///|
 pub async fn shard_async(
   item_index~ : Int,
   item_total~ : Int,
-  shard_index~ : Int,
-  shard_total~ : Int,
+  shard_index? : Int,
+  shard_total? : Int,
   run : async () -> Unit,
 ) -> Unit {
   @test_utils.shard_async(
     item_index~,
     item_total~,
-    shard_index~,
-    shard_total~,
+    shard_index?,
+    shard_total?,
     run,
   )
 }
