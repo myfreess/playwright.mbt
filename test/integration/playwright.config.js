@@ -1,6 +1,7 @@
 const { defineConfig } = require("@playwright/test")
 
 module.exports = defineConfig({
+  globalSetup: require.resolve("./global.setup.js"),
   testDir: ".",
   testMatch: /.*\.spec\.js/,
   retries: 2,

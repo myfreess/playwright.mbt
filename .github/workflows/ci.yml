@@ -45,6 +45,9 @@ jobs:
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
         run: pnpm install --frozen-lockfile
+      - name: Install Playwright Chromium
+        working-directory: test/integration
+        run: pnpm exec playwright install chromium
       - name: Run Playwright integration test
         working-directory: test/integration
         run: pnpm test

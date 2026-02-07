@@ -19,18 +19,57 @@ fn ensure(condition : Bool, message : String) -> Unit {
 }
 
 ///|
+fn parse_string_arg(args : Array[String], index : Int, name : String) -> String {
+  match args.get(index) {
+    Some(value) =>
+      if value.length() == 0 {
+        @abort.abort("empty string arg: " + name)
+      } else {
+        value
+      }
+    None => @abort.abort("missing required arg: " + name)
+  }
+}
+
+///|
+async fn verify_websocket_endpoint(ws_endpoint : String) -> Unit {
+  let transport = @bidi.Transport::websocket(ws_endpoint)
+  let result = transport.connect()
+  match result {
+    Ok(_) => ()
+    Err(_) => @abort.abort("failed to connect websocket endpoint")
+  }
+  let _ = transport.close()
+
+}
+
+///|
+async fn verify_playwright_connection(ws_endpoint : String) -> Unit {
+  let browser = @playwright.chromium().connect_over_websocket(ws_endpoint)
+  ensure(browser.is_connected(), "playwright browser should be connected")
+  browser.close()
+}
+
+///|
 async fn main {
   let _ = @async.now()
   let args = @env.args()
   let argc = args.length()
-  ensure(argc >= 6, "expected at least 6 args")
-  let offset = argc - 6
+  ensure(argc >= 7, "expected at least 7 args")
+  let offset = argc - 7
   let retry_times = parse_int_arg(args, offset + 0, "retry_times")
   let timeout_ms = parse_int_arg(args, offset + 1, "timeout_ms")
   let expect_timeout_ms = parse_int_arg(args, offset + 2, "expect_timeout_ms")
   let expect_interval_ms = parse_int_arg(args, offset + 3, "expect_interval_ms")
   let shard_index = parse_int_arg(args, offset + 4, "shard_index")
   let shard_total = parse_int_arg(args, offset + 5, "shard_total")
+  let ws_endpoint = parse_string_arg(args, offset + 6, "ws_endpoint")
+  ensure(
+    ws_endpoint.has_prefix("ws://") || ws_endpoint.has_prefix("wss://"),
+    "ws_endpoint should start with ws:// or wss://",
+  )
+  verify_websocket_endpoint(ws_endpoint)
+  verify_playwright_connection(ws_endpoint)
   @test_utils.reset_test_config()
   @test_utils.configure_test(
     retry_times~,

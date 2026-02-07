@@ -52,3 +52,45 @@ async test "dsl helpers" {
   @pwt.expect_poll(async fn() -> String { "done-1" }).to_match("done-\\d+")
 }
 ```
+
+## Playwright 連携（1プロセス共有）
+
+`@playwright/test` 側で `globalSetup` を使うと、ブラウザサーバーを 1 回だけ起動して `wsEndpoint` を複数テストで共有できます。
+
+```js
+// test/integration/global.setup.js
+const { chromium } = require("@playwright/test")
+const fs = require("node:fs/promises")
+const path = require("node:path")
+
+module.exports = async () => {
+  const server = await chromium.launchServer({ headless: true })
+  const runtimeDir = path.join(__dirname, ".runtime")
+  await fs.mkdir(runtimeDir, { recursive: true })
+  await fs.writeFile(
+    path.join(runtimeDir, "state.json"),
+    JSON.stringify({ ws_endpoint: server.wsEndpoint() }),
+    "utf-8",
+  )
+  return async () => {
+    await server.close()
+  }
+}
+```
+
+```js
+// test/integration/config_bridge.spec.js (抜粋)
+const state = JSON.parse(fs.readFileSync(".runtime/state.json", "utf-8"))
+const wsEndpoint = state.ws_endpoint
+
+spawnSync("moon", [
+  "run",
+  "src/playwright/test_utils/integration_bridge",
+  "--target",
+  "js",
+  /* retry/timeout/shard など */,
+  wsEndpoint,
+])
+```
+
+このリポジトリでは上記方式を `test/integration/` で実装済みです。

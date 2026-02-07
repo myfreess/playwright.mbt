@@ -6,6 +6,14 @@
       "alias": "test_utils"
     },
     {
+      "path": "mizchi/playwright",
+      "alias": "playwright"
+    },
+    {
+      "path": "mizchi/webdriver/bidi",
+      "alias": "bidi"
+    },
+    {
       "path": "moonbitlang/core/abort",
       "alias": "abort"
     },
