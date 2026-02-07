@@ -51,7 +51,7 @@ async fn verify_playwright_connection(ws_endpoint : String) -> Unit {
 }
 
 ///|
-async fn main {
+async fn run_integration_bridge() -> Unit {
   let _ = @async.now()
   let args = @env.args()
   let argc = args.length()
@@ -130,4 +130,36 @@ async fn main {
   )
   ensure(config.shard_index == shard_index, "shard_index mismatch")
   ensure(config.shard_total == shard_total, "shard_total mismatch")
+}
+
+///|
+#cfg(target="wasm")
+fn main {
+  let _ = run_integration_bridge
+  @abort.abort("integration_bridge is not supported on wasm targets")
+}
+
+///|
+#cfg(target="wasm-gc")
+fn main {
+  let _ = run_integration_bridge
+  @abort.abort("integration_bridge is not supported on wasm-gc target")
+}
+
+///|
+#cfg(target="js")
+async fn main {
+  run_integration_bridge()
+}
+
+///|
+#cfg(target="native")
+async fn main {
+  run_integration_bridge()
+}
+
+///|
+#cfg(target="llvm")
+async fn main {
+  run_integration_bridge()
 }
