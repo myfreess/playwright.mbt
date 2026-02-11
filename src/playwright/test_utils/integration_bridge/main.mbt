@@ -40,7 +40,6 @@ async fn verify_websocket_endpoint(ws_endpoint : String) -> Unit {
     Err(_) => @abort.abort("failed to connect websocket endpoint")
   }
   let _ = transport.close()
-
 }
 
 ///|

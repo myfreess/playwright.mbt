@@ -1,0 +1,15 @@
+import {
+  "mizchi/playwright/test_utils" @test_utils,
+  "mizchi/playwright" @playwright,
+  "mizchi/webdriver/bidi" @bidi,
+  "moonbitlang/core/abort" @abort,
+  "moonbitlang/core/env" @env,
+  "moonbitlang/core/strconv" @strconv,
+  "moonbitlang/async" @async,
+}
+
+warnings = "-67"
+
+options(
+  "is-main": true,
+)

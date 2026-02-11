@@ -1,12 +1,11 @@
 import {
-  "mizchi/webdriver/bidi" as @bidi,
-  "moonbitlang/regexp" as @regexp,
-  "moonbitlang/core/json" as @json,
-  "moonbitlang/core/string" as @string,
-  "moonbitlang/async" as @async,
-  "moonbitlang/async/aqueue" as @aqueue,
+  "mizchi/webdriver/bidi" @bidi,
+  "moonbitlang/regexp" @regexp,
+  "moonbitlang/core/json" @json,
+  "moonbitlang/async" @async,
+  "moonbitlang/async/aqueue" @aqueue,
 }
 
-import "test" {
+import {
   "moonbitlang/async",
-}
+} for "test"

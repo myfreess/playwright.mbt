@@ -276,7 +276,6 @@ fn normalize_text(text : String) -> String {
   }
   if out.length() > 0 && out[out.length() - 1] == ' ' {
     let _ = out.pop()
-
   }
   String::from_array(out)
 }
@@ -1460,7 +1459,7 @@ pub async fn Expect::to_have_url(
   let initial = self.actual.url()
   let (matched, actual) = wait_for_match(
     timeout_ms,
-    async fn() { self.actual.url() },
+    fn() { self.actual.url() },
     fn(value : String) { url_matches(value, expected, mode) },
     initial,
   )

@@ -1,8 +1,10 @@
 import {
-  "moonbitlang/async" as @async,
-  "moonbitlang/async/aqueue" as @aqueue,
+  "moonbitlang/async" @async,
+  "moonbitlang/async/aqueue" @aqueue,
 }
 
-import "test" {
+import {
   "moonbitlang/async",
-}
+} for "test"
+
+warnings = "-67-27"
