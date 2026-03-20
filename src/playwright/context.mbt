@@ -51,6 +51,7 @@ pub async fn BrowserContext::new_page(self : BrowserContext) -> Page {
     request_events: [],
     response_events: [],
     response_completed_events: [],
+    console_messages: [],
   }
   let page : Page = { state: Ref::new(page_state) }
   state.pages.push(page.state)

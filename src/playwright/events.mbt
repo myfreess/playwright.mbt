@@ -28,6 +28,7 @@ fn dispatch_bidi_event(
       handle_network_response(state_ref, "started", evt.params)
     "network.responseCompleted" =>
       handle_network_response(state_ref, "completed", evt.params)
+    "log.entryAdded" => handle_log_entry(state_ref, evt.params)
     _ => ()
   }
 }
@@ -116,6 +117,23 @@ fn dispatch_network_event(
 ) -> Unit {
   for handler in page_state.val.network_listeners {
     handler(event)
+  }
+}
+
+///|
+fn handle_log_entry(state_ref : Ref[BrowserState], params : Json) -> Unit {
+  let context_id = event_context_id(params)
+  let level = event_get_string(params, "level").unwrap_or("info")
+  let text = event_get_string(params, "text").unwrap_or("")
+  let source = event_get_string(params, "source").unwrap_or("")
+  match context_id {
+    Some(ctx) =>
+      match find_page_state(state_ref.val, ctx) {
+        Some(page_state) =>
+          page_state.val.console_messages.push({ level, text, source })
+        None => ()
+      }
+    None => ()
   }
 }
 

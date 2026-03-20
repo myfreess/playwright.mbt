@@ -273,6 +273,7 @@ fn make_dummy_page() -> Page {
     request_events: [],
     response_events: [],
     response_completed_events: [],
+    console_messages: [],
   }
   { state: Ref::new(page_state) }
 }

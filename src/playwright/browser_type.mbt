@@ -56,7 +56,7 @@ pub async fn BrowserType::connect_with_transport(
   }
   let _ = client.session_subscribe([
     "browsingContext.load", "browsingContext.domContentLoaded", "network.beforeRequestSent",
-    "network.responseStarted", "network.responseCompleted",
+    "network.responseStarted", "network.responseCompleted", "log.entryAdded",
   ])
   let state : BrowserState = {
     kind: self.kind,

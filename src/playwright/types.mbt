@@ -447,6 +447,14 @@ priv struct NavigationEvent {
 }
 
 ///|
+/// Console message collected from log.entryAdded events
+pub(all) struct ConsoleMessage {
+  level : String
+  text : String
+  source : String
+}
+
+///|
 priv struct PageState {
   browser : Browser
   context : BrowserContext
@@ -457,6 +465,7 @@ priv struct PageState {
   request_events : Array[Request]
   response_events : Array[Response]
   response_completed_events : Array[Response]
+  console_messages : Array[ConsoleMessage]
 }
 
 ///|

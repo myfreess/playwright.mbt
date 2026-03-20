@@ -920,6 +920,24 @@ pub async fn Page::pdf(
 }
 
 ///|
+/// Get all console messages collected since page creation
+pub fn Page::console_messages(self : Page) -> Array[ConsoleMessage] {
+  self.state.val.console_messages.copy()
+}
+
+///|
+/// Get console error messages (level == "error")
+pub fn Page::console_errors(self : Page) -> Array[ConsoleMessage] {
+  self.state.val.console_messages.filter(fn(m) { m.level == "error" })
+}
+
+///|
+/// Clear collected console messages
+pub fn Page::clear_console(self : Page) -> Unit {
+  self.state.val.console_messages.clear()
+}
+
+///|
 /// Close page
 pub async fn Page::close(self : Page, run_before_unload? : Bool) -> Unit {
   consume(run_before_unload)
