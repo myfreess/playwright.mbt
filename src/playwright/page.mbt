@@ -938,6 +938,62 @@ pub fn Page::clear_console(self : Page) -> Unit {
 }
 
 ///|
+/// Wait until page content contains a specific string.
+/// Polls content() until the string is found or timeout.
+pub async fn Page::wait_for_content(
+  self : Page,
+  text : String,
+  timeout? : Int = 10000,
+) -> Bool {
+  let start = @async.now()
+  for {
+    let content = self.content()
+    if content.contains(text) {
+      return true
+    }
+    let elapsed = @async.now() - start
+    if elapsed >= timeout.to_int64() {
+      return false
+    }
+    self.wait_for_timeout(200)
+  }
+}
+
+///|
+/// Click an element inside a shadow DOM host.
+/// Uses evaluate to pierce shadow roots.
+pub async fn Page::shadow_click(
+  self : Page,
+  host_selector : String,
+  inner_selector : String,
+) -> Unit {
+  let expr = "() => document.querySelector(" +
+    js_string_literal(host_selector) +
+    ")?.shadowRoot?.querySelector(" +
+    js_string_literal(inner_selector) +
+    ")?.click()"
+  let _ = self.evaluate(expr)
+}
+
+///|
+/// Get text content from an element inside a shadow DOM host.
+pub async fn Page::shadow_text(
+  self : Page,
+  host_selector : String,
+  inner_selector : String,
+) -> String {
+  let expr = "() => document.querySelector(" +
+    js_string_literal(host_selector) +
+    ")?.shadowRoot?.querySelector(" +
+    js_string_literal(inner_selector) +
+    ")?.textContent || ''"
+  match self.evaluate(expr) {
+    String(s) => s
+    _ => ""
+  }
+}
+
+///|
 /// Fetch a URL from the page context and return status + body text.
 pub async fn Page::fetch_text(
   self : Page,

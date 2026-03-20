@@ -254,11 +254,17 @@ pub async fn Locator::fill(
   timeout? : Int,
 ) -> Unit {
   consume((force, no_wait_after, timeout))
+  // Use native setter + InputEvent for framework compatibility (React, Vue, Luna/signals)
   let expr = "(() => { const el = " +
     self.element_expression() +
-    "; if (!el) return; el.value = " +
-    js_string_literal(value) +
-    "; el.dispatchEvent(new Event('input',{bubbles:true})); el.dispatchEvent(new Event('change',{bubbles:true})); })()"
+    "; if (!el) return;" +
+    " el.focus();" +
+    " const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set" +
+    "   || Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')?.set;" +
+    " if (setter) setter.call(el, " + js_string_literal(value) + "); else el.value = " + js_string_literal(value) + ";" +
+    " el.dispatchEvent(new InputEvent('input', {bubbles:true, inputType:'insertText', data:" + js_string_literal(value) + "}));" +
+    " el.dispatchEvent(new Event('change', {bubbles:true}));" +
+    " })()"
   let _ = self.page_eval(expr)
 
 }
