@@ -186,6 +186,28 @@ fn[T] consume(value : T) -> Unit {
 }
 
 ///|
+/// Detect if a string looks like a JavaScript function expression.
+/// Returns true for: "() => ...", "(a) => ...", "function(...", "async (...", "async function"
+fn is_function_expression(s : String) -> Bool {
+  let trimmed = s.trim_space().to_string()
+  if trimmed.has_prefix("function") ||
+    trimmed.has_prefix("async function") ||
+    trimmed.has_prefix("async (") ||
+    trimmed.has_prefix("async()") {
+    return true
+  }
+  // Arrow function patterns: "() =>", "(a) =>", "(a, b) =>", "a =>"
+  if trimmed.has_prefix("(") {
+    return true
+  }
+  // Single-param arrow: "x => ..."
+  match trimmed.find("=>") {
+    Some(_) => true
+    None => false
+  }
+}
+
+///|
 let noop_client : @bidi.BidiClient = @bidi.BidiClient::new(
   @bidi.Transport::unsupported("noop"),
 )

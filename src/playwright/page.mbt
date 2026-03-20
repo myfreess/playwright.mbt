@@ -11,16 +11,36 @@ pub async fn Page::goto(
   wait_until? : String,
   referer? : String,
 ) -> Response? {
-  consume((timeout, wait_until, referer))
+  consume(referer)
   let state = self.state.val
   let result = state.browser.state.val.client.browsing_context_navigate(
     state.context_id,
     url,
+    wait=wait_until.unwrap_or("complete"),
   )
   match result {
     Ok(nav) => {
       state.url = nav.url
-      Some(make_response(nav.url))
+      // Try to find the matching network response (collected by event handler)
+      let timeout_ms = timeout.unwrap_or(5000)
+      match self.wait_for_response(
+        url,
+        timeout=timeout_ms,
+        stage="completed",
+      ) {
+        Some(resp) => Some(resp)
+        None =>
+          // Fallback: check response_completed_events directly
+          match self.take_response_completed_event(url, "starts_with", None) {
+            Some(resp) => Some(resp)
+            None =>
+              // Last resort: check response_events (started)
+              match self.take_response_event(url, "starts_with", None) {
+                Some(resp) => Some(resp)
+                None => Some(make_response(nav.url))
+              }
+          }
+      }
     }
     Err(_) => None
   }
@@ -795,18 +815,27 @@ pub async fn Page::wait_for_function(
 }
 
 ///|
-/// Evaluate JavaScript in page context
+/// Evaluate JavaScript in page context.
+/// If page_function looks like a function (starts with "function", "async", "(" or "=>"),
+/// uses script.callFunction for proper invocation. Otherwise uses script.evaluate.
 pub async fn Page::evaluate(
   self : Page,
   page_function : String,
   arg? : Json,
 ) -> Json {
-  consume(arg)
   let state = self.state.val
-  let result = state.browser.state.val.client.script_evaluate(
-    page_function,
-    state.context_id,
-  )
+  let client = state.browser.state.val.client
+  let ctx = state.context_id
+  let result = if is_function_expression(page_function) {
+    // Use callFunction for arrow functions, function expressions, etc.
+    let args : Array[Json] = match arg {
+      Some(a) => [a]
+      None => []
+    }
+    client.script_call_function(page_function, ctx, arguments=args)
+  } else {
+    client.script_evaluate(page_function, ctx)
+  }
   match result {
     Ok(json) =>
       match json_get_object(json, "result") {
