@@ -254,18 +254,21 @@ pub async fn Locator::fill(
   timeout? : Int,
 ) -> Unit {
   consume((force, no_wait_after, timeout))
-  // Use native setter + InputEvent for framework compatibility (React, Vue, Luna/signals)
-  let expr = "(() => { const el = " +
-    self.element_expression() +
-    "; if (!el) return;" +
-    " el.focus();" +
-    " const setter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value')?.set" +
-    "   || Object.getOwnPropertyDescriptor(HTMLTextAreaElement.prototype, 'value')?.set;" +
-    " if (setter) setter.call(el, " + js_string_literal(value) + "); else el.value = " + js_string_literal(value) + ";" +
-    " el.dispatchEvent(new InputEvent('input', {bubbles:true, inputType:'insertText', data:" + js_string_literal(value) + "}));" +
-    " el.dispatchEvent(new Event('change', {bubbles:true}));" +
-    " })()"
-  let _ = self.page_eval(expr)
+  // Pass selector and value via callFunction arguments (avoids escaping issues)
+  let selector = self.state.val.selector
+  let page = self.state.val.page
+  let client = page.state.val.browser.state.val.client
+  let ctx = page.state.val.context_id
+  let args = [
+    json_to_remote_value(Json::string(selector)),
+    json_to_remote_value(Json::string(value)),
+  ]
+  let result = client.script_call_function(
+    "(sel, val) => { const el = document.querySelector(sel); if (!el) return false; el.focus(); el.value = val; el.dispatchEvent(new InputEvent('input',{bubbles:true,data:val,inputType:'insertText'})); el.dispatchEvent(new Event('change',{bubbles:true})); return true; }",
+    ctx,
+    arguments=args,
+  )
+  consume(result)
 
 }
 
@@ -811,8 +814,8 @@ fn Locator::element_expression(self : Locator) -> String {
 ///|
 async fn Locator::page_eval(self : Locator, expression : String) -> Unit {
   let page = self.state.val.page
-  let _ = page.evaluate(expression)
-
+  let result = page.evaluate(expression)
+  consume(result)
 }
 
 ///|

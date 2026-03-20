@@ -938,6 +938,28 @@ pub fn Page::clear_console(self : Page) -> Unit {
 }
 
 ///|
+/// Fill an input element by selector. Uses script.evaluate with single-quote escaping
+/// to avoid double-quote issues in BiDi expression evaluation.
+pub async fn Page::fill_input(
+  self : Page,
+  selector : String,
+  value : String,
+) -> Unit {
+  // Use single quotes for selector to avoid escaping issues with double-quote attributes
+  let sel_escaped = selector.replace(old="'", new="\\'")
+  let val_escaped = value.replace(old="'", new="\\'").replace(old="\\", new="\\\\")
+  let expr = "(function(){var el=document.querySelector('" +
+    sel_escaped +
+    "');if(!el)return;el.focus();el.value='" +
+    val_escaped +
+    "';el.dispatchEvent(new InputEvent('input',{bubbles:true,data:'" +
+    val_escaped +
+    "',inputType:'insertText'}));el.dispatchEvent(new Event('change',{bubbles:true}))})()"
+  let state = self.state.val
+  let _ = state.browser.state.val.client.script_evaluate(expr, state.context_id)
+}
+
+///|
 /// Wait until page content contains a specific string.
 /// Polls content() until the string is found or timeout.
 pub async fn Page::wait_for_content(
@@ -967,11 +989,11 @@ pub async fn Page::shadow_click(
   host_selector : String,
   inner_selector : String,
 ) -> Unit {
-  let expr = "() => document.querySelector(" +
+  let expr = "() => { const el = document.querySelector(" +
     js_string_literal(host_selector) +
     ")?.shadowRoot?.querySelector(" +
     js_string_literal(inner_selector) +
-    ")?.click()"
+    "); if (el) { el.dispatchEvent(new MouseEvent('click', {bubbles:true,composed:true})); el.click(); } }"
   let _ = self.evaluate(expr)
 }
 
