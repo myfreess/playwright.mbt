@@ -44,6 +44,10 @@ fn js_string_literal(value : String) -> String {
 }
 
 ///|
+/// Convert a WebDriver BiDi RemoteValue to MoonBit Json.
+/// Handles primitives (string, number, boolean, null, undefined)
+/// and recursively converts objects and arrays.
+/// See: https://w3c.github.io/webdriver-bidi/#type-script-RemoteValue
 fn remote_value_to_json(value : Json) -> Json {
   match value {
     Object(map) =>
@@ -56,6 +60,11 @@ fn remote_value_to_json(value : Json) -> Json {
         Some(String("number")) =>
           match map.get("value") {
             Some(Number(n, ..)) => Json::number(n)
+            // BiDi encodes special numbers as strings
+            Some(String("NaN")) => Json::number(0.0 / 0.0)
+            Some(String("Infinity")) => Json::number(1.0 / 0.0)
+            Some(String("-Infinity")) => Json::number(-1.0 / 0.0)
+            Some(String("-0")) => Json::number(-0.0)
             _ => Json::number(0.0)
           }
         Some(String("boolean")) =>
@@ -64,8 +73,77 @@ fn remote_value_to_json(value : Json) -> Json {
             Some(False) => Json::boolean(false)
             _ => Json::boolean(false)
           }
-        Some(String("null")) => Json::null()
-        Some(String("undefined")) => Json::null()
+        Some(String("null")) | Some(String("undefined")) => Json::null()
+        // Object: { type: "object", value: [[key_rv, val_rv], ...] }
+        Some(String("object")) =>
+          match map.get("value") {
+            Some(Array(entries)) => {
+              let obj : Map[String, Json] = {}
+              for entry in entries {
+                match entry {
+                  Array([key_rv, val_rv]) =>
+                    match remote_value_to_string(key_rv) {
+                      Some(key) => obj[key] = remote_value_to_json(val_rv)
+                      None => ()
+                    }
+                  _ => ()
+                }
+              }
+              Json::object(obj)
+            }
+            _ => Json::null()
+          }
+        // Array: { type: "array", value: [rv, rv, ...] }
+        Some(String("array")) =>
+          match map.get("value") {
+            Some(Array(items)) =>
+              Json::array(items.map(fn(item) { remote_value_to_json(item) }))
+            _ => Json::array([])
+          }
+        // Map: { type: "map", value: [[key_rv, val_rv], ...] }
+        Some(String("map")) =>
+          match map.get("value") {
+            Some(Array(entries)) => {
+              let obj : Map[String, Json] = {}
+              for entry in entries {
+                match entry {
+                  Array([key_rv, val_rv]) =>
+                    match remote_value_to_string(key_rv) {
+                      Some(key) => obj[key] = remote_value_to_json(val_rv)
+                      None => ()
+                    }
+                  _ => ()
+                }
+              }
+              Json::object(obj)
+            }
+            _ => Json::null()
+          }
+        // Set: { type: "set", value: [rv, rv, ...] }
+        Some(String("set")) =>
+          match map.get("value") {
+            Some(Array(items)) =>
+              Json::array(items.map(fn(item) { remote_value_to_json(item) }))
+            _ => Json::array([])
+          }
+        // Date: { type: "date", value: "ISO string" }
+        Some(String("date")) =>
+          match map.get("value") {
+            Some(String(s)) => Json::string(s)
+            _ => Json::null()
+          }
+        // RegExp: { type: "regexp", value: { pattern, flags } }
+        Some(String("regexp")) =>
+          match map.get("value") {
+            Some(Object(rv)) =>
+              match rv.get("pattern") {
+                Some(String(p)) => Json::string(p)
+                _ => Json::null()
+              }
+            _ => Json::null()
+          }
+        // Node/Window/etc. — return null
+        Some(String("node")) | Some(String("window")) => Json::null()
         _ => value
       }
     _ => value
