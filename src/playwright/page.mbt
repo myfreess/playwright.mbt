@@ -960,6 +960,19 @@ pub async fn Page::fill_input(
 }
 
 ///|
+/// Ensure Luna island hydration is complete.
+/// Calls __LUNA_SCAN__ if available, then waits for the specified timeout.
+/// Use after goto() when testing hydrated islands.
+pub async fn Page::ensure_hydration(
+  self : Page,
+  timeout? : Int = 5000,
+) -> Unit {
+  self.wait_for_timeout(timeout)
+  let _ = self.evaluate("() => { if (window.__LUNA_SCAN__) window.__LUNA_SCAN__(); }")
+  self.wait_for_timeout(500)
+}
+
+///|
 /// Wait until page content contains a specific string.
 /// Polls content() until the string is found or timeout.
 pub async fn Page::wait_for_content(
