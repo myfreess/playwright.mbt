@@ -8,3 +8,5 @@ target
 test/integration/node_modules/
 test/integration/test-results/
 test/integration/.runtime/
+node_modules
+pnpm-lock.yaml

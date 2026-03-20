@@ -105,11 +105,9 @@ pub async fn BrowserType::launch(
       }
     _ => ()
   }
-  // Launch Chrome with BiDi pipe transport (no WS, direct stdio)
-  let transport = @bidi.Transport::chrome_bidi_pipe(
-    headless=headless.unwrap_or(true),
-  )
-  self.connect_with_transport(transport)
+  // Launch Chrome via chromium-bidi mapper, get BiDi WS endpoint
+  let ws_endpoint = launch_browser_process(headless.unwrap_or(true))
+  self.connect(ws_endpoint)
 }
 
 ///|

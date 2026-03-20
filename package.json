@@ -1,0 +1,12 @@
+{
+  "name": "mizchi-playwright-mbt",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@puppeteer/browsers": "^2.13.0",
+    "chromium-bidi": "^14.0.0",
+    "debug": "^4.4.3",
+    "websocket": "^1.0.35",
+    "ws": "^8.0.0"
+  }
+}
