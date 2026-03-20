@@ -10,6 +10,8 @@ pub async fn Browser::close(self : Browser) -> Unit {
     Err(_) => ()
   }
   state.client.close() |> ignore
+  // Kill spawned browser processes
+  ffi_kill_browser_processes()
 }
 
 ///|

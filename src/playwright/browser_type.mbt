@@ -73,7 +73,8 @@ pub async fn BrowserType::connect_with_transport(
 ///| BrowserType Methods
 
 ///|
-/// Launch browser with options
+/// Launch browser with options.
+/// Spawns a real browser process and connects via BiDi WebSocket.
 /// See: https://playwright.dev/docs/api/class-browsertype#browser-type-launch
 pub async fn BrowserType::launch(
   self : BrowserType,
@@ -90,27 +91,23 @@ pub async fn BrowserType::launch(
   slow_mo? : Int,
   timeout? : Int,
 ) -> Browser {
-  let _ = headless
-  let _ = args
-  let _ = channel
-  let _ = chromium_sandbox
-  let _ = devtools
-  let _ = downloads_path
-  let _ = handle_sighup
-  let _ = handle_sigint
-  let _ = handle_sigterm
-  let _ = slow_mo
-  let _ = timeout
-  let endpoint = match executable_path {
+  consume(
+    (
+      args, channel, chromium_sandbox, devtools, downloads_path, handle_sighup,
+      handle_sigint, handle_sigterm, slow_mo, timeout,
+    ),
+  )
+  // If executable_path is a WebSocket URL, connect directly (legacy behavior)
+  match executable_path {
     Some(path) =>
       if path.has_prefix("ws://") || path.has_prefix("wss://") {
-        path
-      } else {
-        DEFAULT_WS_ENDPOINT
+        return self.connect(path)
       }
-    None => DEFAULT_WS_ENDPOINT
+    _ => ()
   }
-  self.connect(endpoint)
+  // Launch a real browser process and extract the WS endpoint
+  let ws_endpoint = launch_browser_process(headless.unwrap_or(true))
+  self.connect(ws_endpoint)
 }
 
 ///|

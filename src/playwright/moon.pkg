@@ -4,6 +4,7 @@ import {
   "moonbitlang/core/json" @json,
   "moonbitlang/async" @async,
   "moonbitlang/async/aqueue" @aqueue,
+  "moonbitlang/async/js_async" @js_async,
 }
 
 import {
