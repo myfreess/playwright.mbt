@@ -4,7 +4,7 @@
   "deps": {
     "moonbitlang/async": "0.16.6",
     "moonbitlang/regexp": "0.3.5",
-    "mizchi/webdriver": "0.2.3",
+    "mizchi/webdriver": { "path": "../webdriver.mbt" },
     "moonbitlang/x": "0.4.40"
   },
   "readme": "README.mbt.md",
