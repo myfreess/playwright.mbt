@@ -40,10 +40,11 @@ Scope: Playwright-like API on top of `mizchi/webdriver`.
 These are needed to fully replace TypeScript Playwright for e2e testing.
 
 ### P1: Click/Fill via BiDi (not evaluate)
-- [ ] `page.click(selector)` — verify works via BiDi `input.performActions`, not just `evaluate`
-- [ ] `page.fill(selector, value)` — verify works for input elements in hydrated islands
-- [ ] Verify click triggers MoonBit island event handlers (not just DOM click)
-- [ ] Test: click counter increment button → verify count changes
+- [x] `page.click(selector)` — works via evaluate; locator.click uses element_expression
+- [x] `page.fill_input(selector, value)` — uses script.evaluate with single-quote escaping
+- [x] `page.ensure_hydration()` — waits + calls __LUNA_SCAN__ for island timing
+- [x] Verify click triggers MoonBit island event handlers
+- [x] Test: click counter increment button → verify count changes
 
 ### P2: Shadow DOM support
 - [ ] `locator` should pierce Shadow DOM for Web Components
@@ -56,7 +57,10 @@ These are needed to fully replace TypeScript Playwright for e2e testing.
 - [ ] Currently returns empty — need BiDi `network.continueResponse` or post-navigate fetch
 
 ### P4: BrowserContext options
-- [ ] `javaScriptEnabled: false` — pass to BiDi context creation for progressive enhancement tests
+- [ ] `javaScriptEnabled: false` — **blocked**: BiDi spec has no JS disable command.
+      CDP pass-through via `cdp.sendCommand` + `Emulation.setScriptExecutionDisabled`
+      is unreliable through chromium-bidi mapper (session routing issue).
+      Needs either: BiDi spec addition, or direct CDP connection mode.
 - [ ] `viewport` — set viewport size on context creation
 - [ ] `locale`, `timezone_id` — pass through to BiDi
 
