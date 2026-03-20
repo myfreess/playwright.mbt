@@ -8,6 +8,7 @@ extern "js" fn ffi_launch_browser_process(headless : Bool) -> @js_async.Promise[
   #| async (headless) => {
   #|   const { existsSync } = await import('node:fs');
   #|   const { WebSocketServer } = await import('chromium-bidi/bidiServer/WebSocketServer.js');
+  #|   const cp = await import('node:child_process');
   #|
   #|   const candidates = [
   #|     process.env.CHROME_PATH,
@@ -28,35 +29,24 @@ extern "js" fn ffi_launch_browser_process(headless : Bool) -> @js_async.Promise[
   #|   if (!chromeBinary) {
   #|     throw new Error('Chrome/Chromium not found. Set CHROME_PATH env var.');
   #|   }
-  #|
-  #|   // Ensure BROWSER_BIN is set for chromium-bidi
   #|   process.env.BROWSER_BIN = chromeBinary;
   #|
   #|   const port = 9990 + Math.floor(Math.random() * 1000);
   #|   const server = new WebSocketServer(port, false);
   #|
-  #|   if (!globalThis.__pw_bidi_servers) globalThis.__pw_bidi_servers = [];
-  #|   globalThis.__pw_bidi_servers.push({ server, port });
+  #|   if (!globalThis.__pw_chrome_pids) globalThis.__pw_chrome_pids = new Set();
   #|
-  #|   // Register cleanup on process exit to prevent orphaned Chrome processes
+  #|   // Register synchronous exit handler once
   #|   if (!globalThis.__pw_exit_registered) {
   #|     globalThis.__pw_exit_registered = true;
-  #|     const cleanup = () => {
-  #|       try {
-  #|         const { execSync } = require('node:child_process');
-  #|         execSync("pkill -f 'chrome.*--remote-debugging-pipe' 2>/dev/null || true");
-  #|       } catch {
-  #|         try {
-  #|           // ESM fallback — use process.kill on known PIDs
-  #|           import('node:child_process').then(({ execSync: es }) => {
-  #|             es("pkill -f 'chrome.*--remote-debugging-pipe' 2>/dev/null || true");
-  #|           });
-  #|         } catch {}
+  #|     const killAll = () => {
+  #|       for (const pid of (globalThis.__pw_chrome_pids || [])) {
+  #|         try { process.kill(pid, 'SIGKILL'); } catch {}
   #|       }
   #|     };
-  #|     process.on('exit', cleanup);
-  #|     process.on('SIGINT', () => { cleanup(); process.exit(130); });
-  #|     process.on('SIGTERM', () => { cleanup(); process.exit(143); });
+  #|     process.on('exit', killAll);
+  #|     process.on('SIGINT', () => { killAll(); process.exit(130); });
+  #|     process.on('SIGTERM', () => { killAll(); process.exit(143); });
   #|   }
   #|
   #|   await new Promise(r => setTimeout(r, 500));
@@ -82,6 +72,18 @@ extern "js" fn ffi_launch_browser_process(headless : Bool) -> @js_async.Promise[
   #|     throw new Error('Failed to create BiDi session: ' + JSON.stringify(sessionData));
   #|   }
   #|
+  #|   // Track Chrome PIDs spawned by chromium-bidi
+  #|   try {
+  #|     const output = cp.execSync(
+  #|       "pgrep -f 'chrome.*--remote-debugging-pipe' 2>/dev/null || true",
+  #|       { encoding: 'utf8' }
+  #|     ).trim();
+  #|     for (const line of output.split('\n')) {
+  #|       const pid = parseInt(line, 10);
+  #|       if (pid > 0) globalThis.__pw_chrome_pids.add(pid);
+  #|     }
+  #|   } catch {}
+  #|
   #|   return wsUrl;
   #| }
 
@@ -89,16 +91,10 @@ extern "js" fn ffi_launch_browser_process(headless : Bool) -> @js_async.Promise[
 /// Close all BiDi servers and kill spawned Chrome processes
 extern "js" fn ffi_kill_browser_processes() -> Unit =
   #| () => {
-  #|   // Kill Chrome processes spawned by chromium-bidi (they use --remote-debugging-pipe)
-  #|   try {
-  #|     const { execSync } = require('node:child_process');
-  #|     execSync("pkill -f 'chrome.*--remote-debugging-pipe' 2>/dev/null || true");
-  #|   } catch {
-  #|     import('node:child_process').then(({ execSync }) => {
-  #|       execSync("pkill -f 'chrome.*--remote-debugging-pipe' 2>/dev/null || true");
-  #|     }).catch(() => {});
+  #|   for (const pid of (globalThis.__pw_chrome_pids || [])) {
+  #|     try { process.kill(pid, 'SIGKILL'); } catch {}
   #|   }
-  #|   globalThis.__pw_bidi_servers = [];
+  #|   if (globalThis.__pw_chrome_pids) globalThis.__pw_chrome_pids.clear();
   #| }
 
 ///|
