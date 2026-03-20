@@ -153,6 +153,11 @@ fn remote_value_to_json(value : Json) -> Json {
 ///|
 fn remote_value_to_string(value : Json) -> String? {
   match value {
+    // Bare string (not wrapped in {type:"string",value:...})
+    String(s) => Some(s)
+    Number(n, ..) => Some(n.to_string())
+    True => Some("true")
+    False => Some("false")
     Object(map) =>
       match map.get("type") {
         Some(String("string")) =>

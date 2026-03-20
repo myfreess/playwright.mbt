@@ -938,6 +938,85 @@ pub fn Page::clear_console(self : Page) -> Unit {
 }
 
 ///|
+/// Fetch a URL from the page context and return status + body text.
+pub async fn Page::fetch_text(
+  self : Page,
+  url : String,
+  method? : String = "GET",
+  body? : String,
+  headers? : Array[(String, String)],
+) -> (Int, String) {
+  let headers_js = match headers {
+    Some(h) => {
+      let buf = StringBuilder::new()
+      buf.write_string("{")
+      for i, pair in h {
+        if i > 0 { buf.write_string(",") }
+        buf.write_string(js_string_literal(pair.0))
+        buf.write_string(":")
+        buf.write_string(js_string_literal(pair.1))
+      }
+      buf.write_string("}")
+      buf.to_string()
+    }
+    None => "undefined"
+  }
+  let body_js = match body {
+    Some(b) => js_string_literal(b)
+    None => "undefined"
+  }
+  // Use synchronous XMLHttpRequest (evaluate doesn't await Promises reliably)
+  let result = self.evaluate(
+    "() => { const xhr = new XMLHttpRequest(); xhr.open(" +
+    js_string_literal(method) + ", " + js_string_literal(url) +
+    ", false); " + // false = synchronous
+    (match headers {
+      Some(h) => {
+        let buf = StringBuilder::new()
+        for pair in h {
+          buf.write_string("xhr.setRequestHeader(")
+          buf.write_string(js_string_literal(pair.0))
+          buf.write_string(",")
+          buf.write_string(js_string_literal(pair.1))
+          buf.write_string(");")
+        }
+        buf.to_string()
+      }
+      None => ""
+    }) +
+    "xhr.send(" + body_js + "); return { status: xhr.status, body: xhr.responseText }; }",
+  )
+  match result {
+    Object(m) => {
+      let status = match m.get("status") {
+        Some(Number(n, ..)) => n.to_int()
+        _ => 0
+      }
+      let text = match m.get("body") {
+        Some(String(s)) => s
+        _ => ""
+      }
+      (status, text)
+    }
+    _ => (0, "")
+  }
+}
+
+///|
+/// Fetch a URL and parse response as JSON.
+pub async fn Page::fetch_json(
+  self : Page,
+  url : String,
+  method? : String = "GET",
+  body? : String,
+  headers? : Array[(String, String)],
+) -> (Int, Json) {
+  let (status, text) = self.fetch_text(url, method~, body?, headers?)
+  let json = try { @json.parse(text) } catch { _ => Json::null() }
+  (status, json)
+}
+
+///|
 /// Close page
 pub async fn Page::close(self : Page, run_before_unload? : Bool) -> Unit {
   consume(run_before_unload)
