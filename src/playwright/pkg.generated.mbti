@@ -17,9 +17,7 @@ pub fn webkit() -> BrowserType
 // Errors
 pub suberror PlaywrightError {
   StrictModeViolation(selector~ : String, count~ : Int)
-}
-pub impl Eq for PlaywrightError
-pub impl Show for PlaywrightError
+} derive(Eq, Show)
 
 // Types and methods
 pub struct BoundingBox {
@@ -27,12 +25,10 @@ pub struct BoundingBox {
   y : Double
   width : Double
   height : Double
-}
+} derive(Eq, Show)
 pub fn BoundingBox::from_json(Json) -> Self?
 pub fn BoundingBox::new(Double, Double, Double, Double) -> Self
 pub fn BoundingBox::to_json(Self) -> Json
-pub impl Eq for BoundingBox
-pub impl Show for BoundingBox
 
 pub struct Browser {
   // private fields
@@ -66,31 +62,32 @@ pub enum BrowserKind {
   Chromium
   Firefox
   WebKit
-}
-pub impl Eq for BrowserKind
-pub impl Show for BrowserKind
+} derive(Eq, Show)
 
 pub struct BrowserType {
   kind : BrowserKind
-}
+} derive(Show)
 pub async fn BrowserType::connect(Self, String) -> Browser
 pub async fn BrowserType::connect_over_websocket(Self, String) -> Browser
 pub async fn BrowserType::connect_with_transport(Self, @bidi.Transport) -> Browser
 pub async fn BrowserType::launch(Self, headless? : Bool, args? : Array[String], channel? : String, chromium_sandbox? : Bool, devtools? : Bool, downloads_path? : String, executable_path? : String, handle_sighup? : Bool, handle_sigint? : Bool, handle_sigterm? : Bool, slow_mo? : Int, timeout? : Int) -> Browser
 pub async fn BrowserType::launch_persistent_context(Self, String, headless? : Bool, args? : Array[String], channel? : String, slow_mo? : Int, timeout? : Int) -> BrowserContext
 pub fn BrowserType::name(Self) -> String
-pub impl Show for BrowserType
 
 pub struct Clip {
   x : Double
   y : Double
   width : Double
   height : Double
-}
+} derive(Eq, Show)
 pub fn Clip::new(Double, Double, Double, Double) -> Self
 pub fn Clip::to_json(Self) -> Json
-pub impl Eq for Clip
-pub impl Show for Clip
+
+pub(all) struct ConsoleMessage {
+  level : String
+  text : String
+  source : String
+}
 
 pub struct Cookie {
   name : String
@@ -102,12 +99,10 @@ pub struct Cookie {
   http_only : Bool?
   secure : Bool?
   same_site : String?
-}
+} derive(Eq, Show)
 pub fn Cookie::from_json(Json) -> Self?
 pub fn Cookie::new(String, String, url? : String, domain? : String, path? : String, expires? : Double, http_only? : Bool, secure? : Bool, same_site? : String) -> Self
 pub fn Cookie::to_json(Self) -> Json
-pub impl Eq for Cookie
-pub impl Show for Cookie
 
 pub struct ElementHandle {
   // private fields
@@ -182,7 +177,7 @@ pub fn Expect::to_match(Self[String], String, msg? : String, loc~ : SourceLoc) -
 pub struct Frame {
   url_ : String
   name_ : String
-}
+} derive(Show)
 pub fn Frame::child_frames(Self) -> Array[Self]
 pub async fn Frame::content(Self) -> String
 pub async fn Frame::goto(Self, String, timeout? : Int, wait_until? : String) -> Response?
@@ -192,18 +187,15 @@ pub fn Frame::name(Self) -> String
 pub fn Frame::parent_frame(Self) -> Self?
 pub async fn Frame::title(Self) -> String
 pub fn Frame::url(Self) -> String
-pub impl Show for Frame
 
 pub struct Headers {
   entries : Array[(String, String)]
-}
+} derive(Eq, Show)
 pub fn Headers::empty() -> Self
 pub fn Headers::from_json(Json) -> Self
 pub fn Headers::from_pairs(Array[(String, String)]) -> Self
 pub fn Headers::get(Self, String) -> String?
 pub fn Headers::to_json(Self) -> Json
-pub impl Eq for Headers
-pub impl Show for Headers
 
 pub struct JSHandle {
   // private fields
@@ -222,12 +214,10 @@ pub fn JSHandle::raw(Self) -> Json
 pub enum Length {
   Points(Double)
   Css(String)
-}
+} derive(Eq, Show)
 pub fn Length::css(String) -> Self
 pub fn Length::points(Double) -> Self
 pub fn Length::to_json(Self) -> Json
-pub impl Eq for Length
-pub impl Show for Length
 
 pub struct Locator {
   // private fields
@@ -281,18 +271,15 @@ pub struct Margin {
   right : Length?
   bottom : Length?
   left : Length?
-}
+} derive(Eq, Show)
 pub fn Margin::new(top? : Length, right? : Length, bottom? : Length, left? : Length) -> Self
 pub fn Margin::to_json(Self) -> Json
-pub impl Eq for Margin
-pub impl Show for Margin
 
 pub enum NetworkEvent {
   Request(Request)
   Response(Response)
   ResponseCompleted(Response)
-}
-pub impl Show for NetworkEvent
+} derive(Show)
 
 pub struct Page {
   // private fields
@@ -301,15 +288,22 @@ pub async fn Page::add_script_tag(Self, url? : String, path? : String, content? 
 pub async fn Page::add_style_tag(Self, url? : String, path? : String, content? : String) -> Json
 pub async fn Page::bring_to_front(Self) -> Unit
 pub async fn Page::check(Self, String, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub fn Page::clear_console(Self) -> Unit
 pub async fn Page::click(Self, String, button? : String, click_count? : Int, delay? : Int, force? : Bool, modifiers? : Array[String], no_wait_after? : Bool, position? : (Double, Double), timeout? : Int, trial? : Bool) -> Unit
 pub async fn Page::close(Self, run_before_unload? : Bool) -> Unit
 pub fn Page::close_with_error_callback(Self, (Error) -> Unit) -> Unit
+pub fn Page::console_errors(Self) -> Array[ConsoleMessage]
+pub fn Page::console_messages(Self) -> Array[ConsoleMessage]
 pub async fn Page::content(Self) -> String
 pub async fn Page::dblclick(Self, String, timeout? : Int, force? : Bool) -> Unit
+pub async fn Page::ensure_hydration(Self, timeout? : Int) -> Unit
 pub async fn Page::evaluate(Self, String, arg? : Json) -> Json
 pub async fn Page::evaluate_handle(Self, String, arg? : Json) -> JSHandle
 pub async fn Page::expose_function(Self, String, Json) -> Unit
+pub async fn Page::fetch_json(Self, String, http_method? : String, body? : String, headers? : Array[(String, String)]) -> (Int, Json)
+pub async fn Page::fetch_text(Self, String, http_method? : String, body? : String, headers? : Array[(String, String)]) -> (Int, String)
 pub async fn Page::fill(Self, String, String, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
+pub async fn Page::fill_input(Self, String, String) -> Unit
 pub async fn Page::focus(Self, String, timeout? : Int) -> Unit
 pub fn Page::get_by_alt_text(Self, String, exact? : Bool) -> Locator
 pub fn Page::get_by_label(Self, String, exact? : Bool) -> Locator
@@ -338,11 +332,14 @@ pub fn Page::set_default_navigation_timeout(Self, Int) -> Unit
 pub fn Page::set_default_timeout(Self, Int) -> Unit
 pub async fn Page::set_extra_http_headers(Self, Headers) -> Unit
 pub async fn Page::set_viewport_size(Self, Int, Int) -> Unit
+pub async fn Page::shadow_click(Self, String, String) -> Unit
+pub async fn Page::shadow_text(Self, String, String) -> String
 pub async fn Page::title(Self) -> String
 pub async fn Page::type_(Self, String, String, delay? : Int, no_wait_after? : Bool, timeout? : Int) -> Unit
 pub async fn Page::uncheck(Self, String, force? : Bool, no_wait_after? : Bool, timeout? : Int) -> Unit
 pub fn Page::url(Self) -> String
 pub fn Page::viewport_size(Self) -> (Int, Int)?
+pub async fn Page::wait_for_content(Self, String, timeout? : Int) -> Bool
 pub async fn Page::wait_for_function(Self, String, arg? : Json, polling? : Int, timeout? : Int) -> Json
 pub async fn Page::wait_for_load_state(Self, state? : String, timeout? : Int) -> Unit
 pub async fn Page::wait_for_navigation(Self, timeout? : Int, url? : String, wait_until? : String) -> Response?
@@ -356,7 +353,7 @@ pub struct Request {
   url_ : String
   method_ : String
   headers_ : Headers
-}
+} derive(Show)
 pub async fn Request::all_headers(Self) -> Headers
 pub fn Request::headers(Self) -> Headers
 pub fn Request::is_navigation_request(Self) -> Bool
@@ -366,7 +363,6 @@ pub fn Request::post_data_json(Self) -> Json
 pub fn Request::resource_type(Self) -> String
 pub async fn Request::response(Self) -> Response?
 pub fn Request::url(Self) -> String
-pub impl Show for Request
 
 pub struct Response {
   url_ : String
@@ -375,7 +371,7 @@ pub struct Response {
   headers_ : Headers
   from_cache_ : Bool
   from_service_worker_ : Bool
-}
+} derive(Show)
 pub async fn Response::all_headers(Self) -> Headers
 pub async fn Response::body(Self) -> ResponseBody
 pub fn Response::frame(Self) -> Frame
@@ -389,31 +385,27 @@ pub fn Response::status(Self) -> Int
 pub fn Response::status_text(Self) -> String
 pub async fn Response::text(Self) -> String
 pub fn Response::url(Self) -> String
-pub impl Show for Response
 
 pub enum ResponseBody {
   Text(String)
   JsonValue(Json)
   Bytes(Bytes)
-}
+} derive(Show)
 pub fn ResponseBody::as_bytes(Self) -> Bytes?
 pub fn ResponseBody::as_json(Self) -> Json?
 pub fn ResponseBody::as_text(Self) -> String?
 pub fn ResponseBody::bytes(Bytes) -> Self
 pub fn ResponseBody::json(Json) -> Self
 pub fn ResponseBody::text(String) -> Self
-pub impl Show for ResponseBody
 
 pub struct SelectOption {
   value : String?
   label : String?
   index : Int?
-}
+} derive(Eq, Show)
 pub fn SelectOption::from_value(String) -> Self
 pub fn SelectOption::new(value? : String, label? : String, index? : Int) -> Self
 pub fn SelectOption::to_json(Self) -> Json
-pub impl Eq for SelectOption
-pub impl Show for SelectOption
 
 // Type aliases
 

@@ -2,7 +2,7 @@
 fn parse_int_arg(args : Array[String], index : Int, name : String) -> Int {
   match args.get(index) {
     Some(value) =>
-      try @strconv.parse_int(value.to_string_view(), base=10) catch {
+      try @string.parse_int(value.to_string_view(), base=10) catch {
         _ => @abort.abort("invalid int arg: " + name + "=" + value)
       } noraise {
         parsed => parsed
@@ -13,7 +13,7 @@ fn parse_int_arg(args : Array[String], index : Int, name : String) -> Int {
 
 ///|
 fn ensure(condition : Bool, message : String) -> Unit {
-  if not(condition) {
+  if !condition {
     @abort.abort(message)
   }
 }

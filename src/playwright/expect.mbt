@@ -265,7 +265,7 @@ fn normalize_text(text : String) -> String {
         in_space.val = true
         continue
       }
-      if not(in_space.val) {
+      if !in_space.val {
         out.push(' ')
         in_space.val = true
       }
@@ -332,7 +332,7 @@ fn parse_length(text : String) -> (Double, String)? {
       index = index + 1
     }
   }
-  if not(has_digit) {
+  if !has_digit {
     return None
   }
   let unit_sb = StringBuilder::new()
@@ -356,9 +356,7 @@ fn parse_length(text : String) -> (Double, String)? {
 ///|
 fn normalize_text_regex_pattern(pattern : String) -> String {
   if pattern.length() >= 2 && pattern.has_prefix("/") && pattern.has_suffix("/") {
-    let view = pattern.sub(start=1, end=pattern.length() - 1) catch {
-      _ => return pattern
-    }
+    let view = pattern.sub(start=1, end=pattern.length() - 1)
     view.to_string()
   } else {
     pattern
@@ -423,7 +421,7 @@ fn class_tokens_contains_all(
         break
       }
     }
-    if not(found) {
+    if !found {
       ok = false
       break
     }
@@ -436,7 +434,7 @@ fn join_list(items : Array[String]) -> String {
   let sb = StringBuilder::new()
   let mut first = true
   for item in items {
-    if not(first) {
+    if !first {
       sb.write_view(", ")
     }
     sb.write_view(item)
@@ -879,7 +877,7 @@ pub async fn Expect::to_have_class(
         while index < expected_list_value.length() {
           let loc = locator_with_index(self.actual, index)
           let exists = locator_exists(loc)
-          if not(exists) {
+          if !exists {
             all_present = false
             actuals.push("<missing>")
           } else {
@@ -898,7 +896,7 @@ pub async fn Expect::to_have_class(
       },
       fn(result : (Array[String], Bool, Bool)) {
         let (actuals, all_present, extra_exists) = result
-        if not(all_present) {
+        if !all_present {
           return false
         }
         if extra_exists {
@@ -921,10 +919,8 @@ pub async fn Expect::to_have_class(
           let item_mode = resolve_class_mode_for_expected(
             expected_value, mode, item_tokens,
           )
-          if not(
-              class_expected_matches(
-                actual_value, expected_value, item_mode, normalize_value, item_tokens,
-              ),
+          if !class_expected_matches(
+              actual_value, expected_value, item_mode, normalize_value, item_tokens,
             ) {
             ok = false
             break

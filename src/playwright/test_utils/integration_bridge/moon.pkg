@@ -4,7 +4,7 @@ import {
   "mizchi/webdriver/bidi" @bidi,
   "moonbitlang/core/abort" @abort,
   "moonbitlang/core/env" @env,
-  "moonbitlang/core/strconv" @strconv,
+  "moonbitlang/core/string" @string,
   "moonbitlang/async" @async,
 }
 

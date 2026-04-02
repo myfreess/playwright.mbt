@@ -187,14 +187,13 @@ fn remote_value_to_string(value : Json) -> String? {
 ///|
 fn[T] consume(value : T) -> Unit {
   let _ = value
-
 }
 
 ///|
 /// Detect if a string looks like a JavaScript function expression.
 /// Returns true for: "() => ...", "(a) => ...", "function(...", "async (...", "async function"
 fn is_function_expression(s : String) -> Bool {
-  let trimmed = s.trim_space().to_string()
+  let trimmed = s.trim().to_string()
   if trimmed.has_prefix("function") ||
     trimmed.has_prefix("async function") ||
     trimmed.has_prefix("async (") ||
@@ -220,7 +219,6 @@ let noop_client : @bidi.BidiClient = @bidi.BidiClient::new(
 ///|
 async fn async_noop() -> Unit {
   let _ = noop_client.connect()
-
 }
 
 ///|
@@ -232,7 +230,6 @@ async fn sleep_ms(ms : Int) -> Unit {
     kind=@aqueue.Kind::Unbounded,
   )
   let _ = @async.with_timeout_opt(ms, async fn() -> Unit { queue.get() })
-
 }
 
 ///|

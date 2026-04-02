@@ -13,7 +13,6 @@ pub async fn BrowserContext::close(self : BrowserContext) -> Unit {
     let _ = state.browser.state.val.client.browser_remove_user_context(
       state.user_context,
     )
-
   }
 }
 
@@ -26,7 +25,6 @@ pub fn BrowserContext::close_with_error_callback(
 ) -> Unit {
   let _ = self
   let _ = on_error
-
 }
 
 ///|
@@ -77,7 +75,6 @@ pub fn BrowserContext::set_default_navigation_timeout(
 ) -> Unit {
   let _ = self
   let _ = timeout
-
 }
 
 ///|
@@ -88,7 +85,6 @@ pub fn BrowserContext::set_default_timeout(
 ) -> Unit {
   let _ = self
   let _ = timeout
-
 }
 
 ///|

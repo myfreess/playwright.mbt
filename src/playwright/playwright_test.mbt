@@ -171,7 +171,6 @@ test "headers and bounding box codecs" {
   let _ = margin.to_json()
   let clip = Clip::new(1.0, 2.0, 3.0, 4.0)
   let _ = clip.to_json()
-
 }
 
 ///|

@@ -226,7 +226,6 @@ pub async fn Locator::click(
     self.element_expression() +
     ".click()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -241,7 +240,6 @@ pub async fn Locator::dblclick(
     self.element_expression() +
     "; if (!el) return; const ev = new MouseEvent('dblclick',{bubbles:true}); el.dispatchEvent(ev); })()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -269,7 +267,6 @@ pub async fn Locator::fill(
     arguments=args,
   )
   consume(result)
-
 }
 
 ///|
@@ -300,7 +297,6 @@ pub async fn Locator::type_(
     js_string_literal(text) +
     "; el.dispatchEvent(new Event('input',{bubbles:true})); })()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -319,7 +315,6 @@ pub async fn Locator::press(
     js_string_literal(key) +
     ",bubbles:true}); el.dispatchEvent(ev); })()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -335,7 +330,6 @@ pub async fn Locator::check(
     self.element_expression() +
     "; if (!el) return; el.checked = true; el.dispatchEvent(new Event('change',{bubbles:true})); })()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -351,7 +345,6 @@ pub async fn Locator::uncheck(
     self.element_expression() +
     "; if (!el) return; el.checked = false; el.dispatchEvent(new Event('change',{bubbles:true})); })()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -400,7 +393,6 @@ pub async fn Locator::hover(
     self.element_expression() +
     "; if (!el) return; const ev = new MouseEvent('mouseover',{bubbles:true}); el.dispatchEvent(ev); })()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -412,7 +404,6 @@ pub async fn Locator::focus(self : Locator, timeout? : Int) -> Unit {
     self.element_expression() +
     ".focus()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -424,7 +415,6 @@ pub async fn Locator::blur(self : Locator, timeout? : Int) -> Unit {
     self.element_expression() +
     ".blur()"
   let _ = self.page_eval(expr)
-
 }
 
 ///|
@@ -439,7 +429,6 @@ pub async fn Locator::scroll_into_view_if_needed(
     self.element_expression() +
     ".scrollIntoView()"
   let _ = self.page_eval(expr)
-
 }
 
 ///| Property Methods
@@ -612,19 +601,15 @@ pub async fn Locator::wait_for(
   match (state, timeout) {
     (Some(s), Some(t)) => {
       let _ = page.wait_for_selector(selector, state=s, timeout=t)
-
     }
     (Some(s), None) => {
       let _ = page.wait_for_selector(selector, state=s)
-
     }
     (None, Some(t)) => {
       let _ = page.wait_for_selector(selector, timeout=t)
-
     }
     (None, None) => {
       let _ = page.wait_for_selector(selector)
-
     }
   }
 }

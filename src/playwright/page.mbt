@@ -23,11 +23,7 @@ pub async fn Page::goto(
       state.url = nav.url
       // Try to find the matching network response (collected by event handler)
       let timeout_ms = timeout.unwrap_or(5000)
-      match self.wait_for_response(
-        url,
-        timeout=timeout_ms,
-        stage="completed",
-      ) {
+      match self.wait_for_response(url, timeout=timeout_ms, stage="completed") {
         Some(resp) => Some(resp)
         None =>
           // Fallback: check response_completed_events directly
@@ -123,7 +119,6 @@ pub async fn Page::set_content(
     Json::object({ "type": Json::string("string"), "value": Json::string(html) }),
   ]
   let _ = self.call_function(expr, args)
-
 }
 
 ///|
@@ -524,9 +519,9 @@ pub async fn Page::wait_for_selector(
           let handle = JSHandle::from_page(self, nodes[0])
           break handle.as_element()
         }
-      "detached" => if not(found) { break None }
+      "detached" => if !found { break None }
       "hidden" =>
-        if not(found) {
+        if !found {
           break None
         } else {
           match self.is_node_visible(nodes[0]) {
@@ -592,11 +587,9 @@ pub async fn Page::wait_for_load_state(
   match timeout {
     Some(value) => {
       let _ = self.wait_for_navigation(timeout=value, wait_until=desired)
-
     }
     None => {
       let _ = self.wait_for_navigation(wait_until=desired)
-
     }
   }
 }
@@ -701,7 +694,6 @@ pub async fn Page::wait_for_url(
     sleep_ms(wait_ms)
     continue attempt + 1
   }
-
 }
 
 ///|
@@ -947,7 +939,9 @@ pub async fn Page::fill_input(
 ) -> Unit {
   // Use single quotes for selector to avoid escaping issues with double-quote attributes
   let sel_escaped = selector.replace(old="'", new="\\'")
-  let val_escaped = value.replace(old="'", new="\\'").replace(old="\\", new="\\\\")
+  let val_escaped = value
+    .replace(old="'", new="\\'")
+    .replace(old="\\", new="\\\\")
   let expr = "(function(){var el=document.querySelector('" +
     sel_escaped +
     "');if(!el)return;el.focus();el.value='" +
@@ -963,12 +957,11 @@ pub async fn Page::fill_input(
 /// Ensure Luna island hydration is complete.
 /// Calls __LUNA_SCAN__ if available, then waits for the specified timeout.
 /// Use after goto() when testing hydrated islands.
-pub async fn Page::ensure_hydration(
-  self : Page,
-  timeout? : Int = 5000,
-) -> Unit {
+pub async fn Page::ensure_hydration(self : Page, timeout? : Int = 5000) -> Unit {
   self.wait_for_timeout(timeout)
-  let _ = self.evaluate("() => { if (window.__LUNA_SCAN__) window.__LUNA_SCAN__(); }")
+  let _ = self.evaluate(
+    "() => { if (window.__LUNA_SCAN__) window.__LUNA_SCAN__(); }",
+  )
   self.wait_for_timeout(500)
 }
 
@@ -981,7 +974,7 @@ pub async fn Page::wait_for_content(
   timeout? : Int = 10000,
 ) -> Bool {
   let start = @async.now()
-  for {
+  for ;; {
     let content = self.content()
     if content.contains(text) {
       return true
@@ -1033,25 +1026,10 @@ pub async fn Page::shadow_text(
 pub async fn Page::fetch_text(
   self : Page,
   url : String,
-  method? : String = "GET",
+  http_method? : String = "GET",
   body? : String,
   headers? : Array[(String, String)],
 ) -> (Int, String) {
-  let headers_js = match headers {
-    Some(h) => {
-      let buf = StringBuilder::new()
-      buf.write_string("{")
-      for i, pair in h {
-        if i > 0 { buf.write_string(",") }
-        buf.write_string(js_string_literal(pair.0))
-        buf.write_string(":")
-        buf.write_string(js_string_literal(pair.1))
-      }
-      buf.write_string("}")
-      buf.to_string()
-    }
-    None => "undefined"
-  }
   let body_js = match body {
     Some(b) => js_string_literal(b)
     None => "undefined"
@@ -1059,7 +1037,9 @@ pub async fn Page::fetch_text(
   // Use synchronous XMLHttpRequest (evaluate doesn't await Promises reliably)
   let result = self.evaluate(
     "() => { const xhr = new XMLHttpRequest(); xhr.open(" +
-    js_string_literal(method) + ", " + js_string_literal(url) +
+    js_string_literal(http_method) +
+    ", " +
+    js_string_literal(url) +
     ", false); " + // false = synchronous
     (match headers {
       Some(h) => {
@@ -1075,7 +1055,9 @@ pub async fn Page::fetch_text(
       }
       None => ""
     }) +
-    "xhr.send(" + body_js + "); return { status: xhr.status, body: xhr.responseText }; }",
+    "xhr.send(" +
+    body_js +
+    "); return { status: xhr.status, body: xhr.responseText }; }",
   )
   match result {
     Object(m) => {
@@ -1098,12 +1080,12 @@ pub async fn Page::fetch_text(
 pub async fn Page::fetch_json(
   self : Page,
   url : String,
-  method? : String = "GET",
+  http_method? : String = "GET",
   body? : String,
   headers? : Array[(String, String)],
 ) -> (Int, Json) {
-  let (status, text) = self.fetch_text(url, method~, body?, headers?)
-  let json = try { @json.parse(text) } catch { _ => Json::null() }
+  let (status, text) = self.fetch_text(url, http_method~, body?, headers?)
+  let json = @json.parse(text) catch { _ => Json::null() }
   (status, json)
 }
 
@@ -1116,7 +1098,6 @@ pub async fn Page::close(self : Page, run_before_unload? : Bool) -> Unit {
     state.context_id,
   )
   let _ = state.context
-
 }
 
 ///|
@@ -1250,7 +1231,6 @@ async fn Page::call_function(
     state.context_id,
     arguments=args,
   )
-
 }
 
 ///|
@@ -1455,9 +1435,7 @@ fn url_matches(url : String, pattern : String, match_mode : String) -> Bool {
 ///|
 fn normalize_regex_pattern(pattern : String) -> String {
   if pattern.length() >= 2 && pattern.has_prefix("/") && pattern.has_suffix("/") {
-    let view = pattern.sub(start=1, end=pattern.length() - 1) catch {
-      _ => return pattern
-    }
+    let view = pattern.sub(start=1, end=pattern.length() - 1)
     view.to_string()
   } else {
     pattern

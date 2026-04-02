@@ -2,9 +2,6 @@
 /// BrowserType and entry points
 
 ///|
-const DEFAULT_WS_ENDPOINT : String = "ws://127.0.0.1:9222"
-
-///|
 pub fn chromium() -> BrowserType {
   { kind: BrowserKind::Chromium }
 }
@@ -93,8 +90,8 @@ pub async fn BrowserType::launch(
 ) -> Browser {
   consume(
     (
-      args, channel, chromium_sandbox, devtools, downloads_path, handle_sighup,
-      handle_sigint, handle_sigterm, slow_mo, timeout,
+      args, channel, chromium_sandbox, devtools, downloads_path, handle_sighup, handle_sigint,
+      handle_sigterm, slow_mo, timeout,
     ),
   )
   // If executable_path is a WebSocket URL, connect directly (legacy behavior)

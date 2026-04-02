@@ -1,20 +1,20 @@
 # mizchi/playwright.mbt
 
-Playwright 互換 API を WebDriver BiDi 上に実装した MoonBit ライブラリです。
-関数名は MoonBit 流儀の `snake_case` で提供します。
+MoonBit library that implements a Playwright-compatible API on top of WebDriver BiDi.
+Function names follow the MoonBit `snake_case` convention.
 
-## インストール
+## Installation
 
 ```bash
 moon add mizchi/playwright
 ```
 
-## パッケージ
+## Packages
 
-- `mizchi/playwright`: ブラウザ操作 API（`chromium`, `firefox`, `webkit` など）
-- `mizchi/playwright/test`: `expect` とテスト DSL（`retry`, `timeout`, `to_pass`, `expect_poll`, `step`, `skip`, `fail`, `fixme`, `shard` など）
+- `mizchi/playwright`: Browser automation API (`chromium`, `firefox`, `webkit`, etc.)
+- `mizchi/playwright/test`: `expect` and the test DSL (`retry`, `timeout`, `to_pass`, `expect_poll`, `step`, `skip`, `fail`, `fixme`, `shard`, etc.)
 
-## 使い方
+## Usage
 
 ```mbt check
 import "mizchi/playwright" as @pw
@@ -35,27 +35,27 @@ async test "dsl helpers" {
 
   let _ = @pwt.step("open", fn() -> Int { 1 })
 
-  // shard は設定値を省略可能
+  // shard can omit configuration values
   @pwt.shard(item_index=0, item_total=2, fn() {})
 
-  // retry / timeout は設定値をデフォルトとして使える
+  // retry / timeout can use configured defaults
   let _ = @pwt.retry(async fn() -> Int { 1 })
 
   let _ = @pwt.timeout(async fn() -> Int { 1 })
 
-  // 一定時間リトライしながら assertion
+  // Retry assertions for a bounded amount of time
   @pwt.to_pass(async fn() {
     @pwt.expect("ok").to_equal("ok")
   })
 
-  // expect.poll 相当
+  // Equivalent to expect.poll
   @pwt.expect_poll(async fn() -> String { "done-1" }).to_match("done-\\d+")
 }
 ```
 
-## Playwright 連携（1プロセス共有）
+## Playwright Integration (Shared Single Process)
 
-`@playwright/test` 側で `globalSetup` を使うと、ブラウザサーバーを 1 回だけ起動して `wsEndpoint` を複数テストで共有できます。
+Using `globalSetup` on the `@playwright/test` side lets you start the browser server only once and share the `wsEndpoint` across multiple tests.
 
 ```js
 // test/integration/global.setup.js
@@ -79,7 +79,7 @@ module.exports = async () => {
 ```
 
 ```js
-// test/integration/config_bridge.spec.js (抜粋)
+// test/integration/config_bridge.spec.js (excerpt)
 const state = JSON.parse(fs.readFileSync(".runtime/state.json", "utf-8"))
 const wsEndpoint = state.ws_endpoint
 
@@ -88,9 +88,9 @@ spawnSync("moon", [
   "src/playwright/test_utils/integration_bridge",
   "--target",
   "js",
-  /* retry/timeout/shard など */,
+  /* retry/timeout/shard, etc. */,
   wsEndpoint,
 ])
 ```
 
-このリポジトリでは上記方式を `test/integration/` で実装済みです。
+This repository already implements this approach in `test/integration/`.

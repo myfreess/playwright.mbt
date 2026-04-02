@@ -57,7 +57,6 @@ fn resolve_shard_index(shard_index : Int?, shard_total : Int) -> Int {
 ///|
 fn[T] consume(value : T) -> Unit {
   let _ = value
-
 }
 
 ///|
@@ -69,7 +68,6 @@ async fn sleep_ms(ms : Int) -> Unit {
     kind=@aqueue.Kind::Unbounded,
   )
   let _ = @async.with_timeout_opt(ms, async fn() -> Unit { queue.get() })
-
 }
 
 ///|
@@ -151,7 +149,7 @@ pub fn skip(run : () -> Unit) -> Unit {
 
 ///|
 pub fn skip_if(condition~ : Bool, run : () -> Unit) -> Unit {
-  if not(condition) {
+  if !condition {
     run()
   }
 }
@@ -163,7 +161,7 @@ pub fn skip_async(run : async () -> Unit) -> Unit {
 
 ///|
 pub async fn skip_if_async(condition~ : Bool, run : async () -> Unit) -> Unit {
-  if not(condition) {
+  if !condition {
     run()
   }
 }
